@@ -1,0 +1,1332 @@
+2D ndarray A matrix of data, passing optional row and column labels
+dict of arrays, lists, or tuples Each sequence becomes a column in the DataFrame. All sequences must be the same length.
+NumPy structured/record array Treated as the “dict of arrays” case
+dict of Series Each value becomes a column. Indexes from each Series are unioned together to form the
+result’s row index if no explicit index is passed.
+dict of dicts Each inner dict becomes a column. Keys are unioned to form the row index as in the “dict of
+Series” case.
+list of dicts or Series Each item becomes a row in the DataFrame. Union of dict keys or Series indexes become the
+DataFrame’s column labels
+List of lists or tuples Treated as the “2D ndarray” case
+Another DataFrame The DataFrame’s indexes are used unless different ones are passed
+NumPy MaskedArray Like the “2D ndarray” case except masked values become NA/missing in the DataFrame
+In [1]: import pandas as pd
+
+In [2]: from pd import Series, DataFrame
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-2-6605c41b6f5a> in <module>
+----> 1 from pd import Series, DataFrame
+
+ImportError: No module named 'pd'
+
+In [3]: import pandas
+
+In [4]: from pandas import Series, DataFrame
+
+In [5]: import pandas as pd
+
+In [6]: obj = Series([4,7,-5,3])
+
+In [7]: obj
+Out[7]:
+0    4
+1    7
+2   -5
+3    3
+dtype: int64
+
+In [8]: obj.values
+Out[8]: array([ 4,  7, -5,  3])
+
+In [9]: obj.index
+Out[9]: RangeIndex(start=0, stop=4, step=1)
+
+In [10]: obj2 = Series([4,7,-5,3], index=['d','b','a','c'])
+
+In [11]: obj2
+Out[11]:
+d    4
+b    7
+a   -5
+c    3
+dtype: int64
+
+In [12]: obj2.index
+Out[12]: Index(['d', 'b', 'a', 'c'], dtype='object')
+
+In [13]: obj2['a']
+Out[13]: -5
+
+In [14]: obj2['d']
+Out[14]: 4
+
+In [15]: obj2['d'] = 6
+
+In [16]: obj2
+Out[16]:
+d    6
+b    7
+a   -5
+c    3
+dtype: int64
+
+In [17]: obj2[['c','a','d']]
+Out[17]:
+c    3
+a   -5
+d    6
+dtype: int64
+
+In [18]: obj2
+Out[18]:
+d    6
+b    7
+a   -5
+c    3
+dtype: int64
+
+In [19]: obj2[obj2 > 0]
+Out[19]:
+d    6
+b    7
+c    3
+dtype: int64
+
+In [20]: obj2 * 2
+Out[20]:
+d    12
+b    14
+a   -10
+c     6
+dtype: int64
+
+In [21]: np.exp(obj2)
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-21-6ae9d3c15d3f> in <module>
+----> 1 np.exp(obj2)
+
+NameError: name 'np' is not defined
+
+In [22]: import numpy as np
+
+In [23]: np.exp(obj2)
+Out[23]:
+d     403.428793
+b    1096.633158
+a       0.006738
+c      20.085537
+dtype: float64
+
+In [24]: obj2.dtype
+Out[24]: dtype('int64')
+
+In [25]: obj2.shape
+Out[25]: (4,)
+
+In [26]: 'b' in obj2
+Out[26]: True
+
+In [27]: 'e' in obj2
+Out[27]: False
+
+In [28]: sdata = {'Ohio': 35000, 'Texas': 71000, 'Oregon': 16000, 'Utah': 5000}
+
+In [29]: obj3 = Series(sdata)
+
+In [30]: obj3
+Out[30]:
+Ohio      35000
+Oregon    16000
+Texas     71000
+Utah       5000
+dtype: int64
+
+In [31]: obj3.index
+Out[31]: Index(['Ohio', 'Oregon', 'Texas', 'Utah'], dtype='object')
+
+In [32]: obj3.values
+Out[32]: array([35000, 16000, 71000,  5000])
+
+In [33]: states = ['California', 'Ohio', 'Oregon', 'Texas']
+
+In [34]: obj4 = Series(sdata, index=states)
+
+In [35]: obj4
+Out[35]:
+California        NaN
+Ohio          35000.0
+Oregon        16000.0
+Texas         71000.0
+dtype: float64
+
+In [36]: isnull
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-36-ae3273fd314f> in <module>
+----> 1 isnull
+
+NameError: name 'isnull' is not defined
+
+In [37]: pd.isnull(obj4)
+Out[37]:
+California     True
+Ohio          False
+Oregon        False
+Texas         False
+dtype: bool
+
+In [38]: pd.notnull(obj4)
+Out[38]:
+California    False
+Ohio           True
+Oregon         True
+Texas          True
+dtype: bool
+
+In [39]: obj4.isnull()
+Out[39]:
+California     True
+Ohio          False
+Oregon        False
+Texas         False
+dtype: bool
+
+In [40]: obj3
+Out[40]:
+Ohio      35000
+Oregon    16000
+Texas     71000
+Utah       5000
+dtype: int64
+
+In [41]: obj4
+Out[41]:
+California        NaN
+Ohio          35000.0
+Oregon        16000.0
+Texas         71000.0
+dtype: float64
+
+In [42]: obj3 + obj4
+Out[42]:
+California         NaN
+Ohio           70000.0
+Oregon         32000.0
+Texas         142000.0
+Utah               NaN
+dtype: float64
+
+In [43]: obj3.name
+
+In [44]: obj4
+Out[44]:
+California        NaN
+Ohio          35000.0
+Oregon        16000.0
+Texas         71000.0
+dtype: float64
+
+In [45]: obj4.name = 'population'
+
+In [46]: obj4.name
+Out[46]: 'population'
+
+In [47]: obj4.index
+Out[47]: Index(['California', 'Ohio', 'Oregon', 'Texas'], dtype='object')
+
+In [48]: obj4.index.name = 'state'
+
+In [49]: obj4
+Out[49]:
+state
+California        NaN
+Ohio          35000.0
+Oregon        16000.0
+Texas         71000.0
+Name: population, dtype: float64
+
+In [50]: obj
+Out[50]:
+0    4
+1    7
+2   -5
+3    3
+dtype: int64
+
+In [51]: obj.index = ['Bob', 'Steve', 'Jeff', 'Ryan']
+
+In [52]: obj
+Out[52]:
+Bob      4
+Steve    7
+Jeff    -5
+Ryan     3
+dtype: int64
+
+In [53]: obj.index
+Out[53]: Index(['Bob', 'Steve', 'Jeff', 'Ryan'], dtype='object')
+
+In [54]: obj.values
+Out[54]: array([ 4,  7, -5,  3])
+
+In [55]: data = {'state':['Ohio','Ohio','Ohio','Nevada','Nevada'],'year':[2000,2001,2002,2001,2002],'p
+    ...: op':[1.5, 1.7, 3.6, 2.4, 2.9]}
+
+In [56]: data
+Out[56]:
+{'pop': [1.5, 1.7, 3.6, 2.4, 2.9],
+ 'state': ['Ohio', 'Ohio', 'Ohio', 'Nevada', 'Nevada'],
+ 'year': [2000, 2001, 2002, 2001, 2002]}
+
+In [57]: frame = DataFrame(data)
+
+In [58]: frame
+Out[58]:
+   pop   state  year
+0  1.5    Ohio  2000
+1  1.7    Ohio  2001
+2  3.6    Ohio  2002
+3  2.4  Nevada  2001
+4  2.9  Nevada  2002
+
+In [59]: frame.index
+Out[59]: RangeIndex(start=0, stop=5, step=1)
+
+In [60]: frame.values
+Out[60]:
+array([[1.5, 'Ohio', 2000],
+       [1.7, 'Ohio', 2001],
+       [3.6, 'Ohio', 2002],
+       [2.4, 'Nevada', 2001],
+       [2.9, 'Nevada', 2002]], dtype=object)
+
+In [61]: DataFrame(data, columns=['year','state','pop'])
+Out[61]:
+   year   state  pop
+0  2000    Ohio  1.5
+1  2001    Ohio  1.7
+2  2002    Ohio  3.6
+3  2001  Nevada  2.4
+4  2002  Nevada  2.9
+
+In [62]: frame
+Out[62]:
+   pop   state  year
+0  1.5    Ohio  2000
+1  1.7    Ohio  2001
+2  3.6    Ohio  2002
+3  2.4  Nevada  2001
+4  2.9  Nevada  2002
+
+In [63]: frame2 = DataFrame(data, columns=['year','state','pop','debt'],index=['one','two','three','fo
+    ...: ur','five'])
+
+In [64]: frame2
+Out[64]:
+       year   state  pop debt
+one    2000    Ohio  1.5  NaN
+two    2001    Ohio  1.7  NaN
+three  2002    Ohio  3.6  NaN
+four   2001  Nevada  2.4  NaN
+five   2002  Nevada  2.9  NaN
+
+In [65]: frame.index
+Out[65]: RangeIndex(start=0, stop=5, step=1)
+
+In [66]: frame.values
+Out[66]:
+array([[1.5, 'Ohio', 2000],
+       [1.7, 'Ohio', 2001],
+       [3.6, 'Ohio', 2002],
+       [2.4, 'Nevada', 2001],
+       [2.9, 'Nevada', 2002]], dtype=object)
+
+In [67]: frame2.columns
+Out[67]: Index(['year', 'state', 'pop', 'debt'], dtype='object')
+
+In [68]: frame2.rows
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-68-63a392e6ef17> in <module>
+----> 1 frame2.rows
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in __getattr__(self, name)
+   4374             if self._info_axis._can_hold_identifiers_and_holds_name(name):
+   4375                 return self[name]
+-> 4376             return object.__getattribute__(self, name)
+   4377
+   4378     def __setattr__(self, name, value):
+
+AttributeError: 'DataFrame' object has no attribute 'rows'
+
+In [69]: frame2.index
+Out[69]: Index(['one', 'two', 'three', 'four', 'five'], dtype='object')
+
+In [70]: frame2.columns
+Out[70]: Index(['year', 'state', 'pop', 'debt'], dtype='object')
+
+In [71]: frame2['state']
+Out[71]:
+one        Ohio
+two        Ohio
+three      Ohio
+four     Nevada
+five     Nevada
+Name: state, dtype: object
+
+In [72]: frame2.year
+Out[72]:
+one      2000
+two      2001
+three    2002
+four     2001
+five     2002
+Name: year, dtype: int64
+
+In [73]: frame2.ix
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[73]: <pandas.core.indexing._IXIndexer at 0x7fc4eb968318>
+
+In [74]: frame2.ix['three']
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[74]:
+year     2002
+state    Ohio
+pop       3.6
+debt      NaN
+Name: three, dtype: object
+
+In [75]: frame2
+Out[75]:
+       year   state  pop debt
+one    2000    Ohio  1.5  NaN
+two    2001    Ohio  1.7  NaN
+three  2002    Ohio  3.6  NaN
+four   2001  Nevada  2.4  NaN
+five   2002  Nevada  2.9  NaN
+
+In [76]: frame2.ix['two']
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[76]:
+year     2001
+state    Ohio
+pop       1.7
+debt      NaN
+Name: two, dtype: object
+
+In [77]: frame2['debt']
+Out[77]:
+one      NaN
+two      NaN
+three    NaN
+four     NaN
+five     NaN
+Name: debt, dtype: object
+
+In [78]: frame2['debt'] = 16.5
+
+In [79]: frame2
+Out[79]:
+       year   state  pop  debt
+one    2000    Ohio  1.5  16.5
+two    2001    Ohio  1.7  16.5
+three  2002    Ohio  3.6  16.5
+four   2001  Nevada  2.4  16.5
+five   2002  Nevada  2.9  16.5
+
+In [80]: frame2['debt'] = np.arange(5.)
+
+In [81]: frame2
+Out[81]:
+       year   state  pop  debt
+one    2000    Ohio  1.5   0.0
+two    2001    Ohio  1.7   1.0
+three  2002    Ohio  3.6   2.0
+four   2001  Nevada  2.4   3.0
+five   2002  Nevada  2.9   4.0
+
+In [82]: fram2.index
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-82-126750100cc5> in <module>
+----> 1 fram2.index
+
+NameError: name 'fram2' is not defined
+
+In [83]: frame2.index
+Out[83]: Index(['one', 'two', 'three', 'four', 'five'], dtype='object')
+
+In [84]: frame2.values
+Out[84]:
+array([[2000, 'Ohio', 1.5, 0.0],
+       [2001, 'Ohio', 1.7, 1.0],
+       [2002, 'Ohio', 3.6, 2.0],
+       [2001, 'Nevada', 2.4, 3.0],
+       [2002, 'Nevada', 2.9, 4.0]], dtype=object)
+
+In [85]: val = Series([-1.2, -1.5, -1.7], index=['two','four','five'])
+
+In [86]: val
+Out[86]:
+two    -1.2
+four   -1.5
+five   -1.7
+dtype: float64
+
+In [87]: frame2
+Out[87]:
+       year   state  pop  debt
+one    2000    Ohio  1.5   0.0
+two    2001    Ohio  1.7   1.0
+three  2002    Ohio  3.6   2.0
+four   2001  Nevada  2.4   3.0
+five   2002  Nevada  2.9   4.0
+
+In [88]: frame2['debt'] = val
+
+In [89]: frame2
+Out[89]:
+       year   state  pop  debt
+one    2000    Ohio  1.5   NaN
+two    2001    Ohio  1.7  -1.2
+three  2002    Ohio  3.6   NaN
+four   2001  Nevada  2.4  -1.5
+five   2002  Nevada  2.9  -1.7
+
+In [90]: frame2
+Out[90]:
+       year   state  pop  debt
+one    2000    Ohio  1.5   NaN
+two    2001    Ohio  1.7  -1.2
+three  2002    Ohio  3.6   NaN
+four   2001  Nevada  2.4  -1.5
+five   2002  Nevada  2.9  -1.7
+
+In [91]: frame2['eastern'] = frame2.state == 'Ohio'
+
+In [92]: frame2.state == 'Ohio'
+Out[92]:
+one       True
+two       True
+three     True
+four     False
+five     False
+Name: state, dtype: bool
+
+In [93]: frame2
+Out[93]:
+       year   state  pop  debt  eastern
+one    2000    Ohio  1.5   NaN     True
+two    2001    Ohio  1.7  -1.2     True
+three  2002    Ohio  3.6   NaN     True
+four   2001  Nevada  2.4  -1.5    False
+five   2002  Nevada  2.9  -1.7    False
+
+In [94]: del frame2['eastern']
+
+In [95]: frame2
+Out[95]:
+       year   state  pop  debt
+one    2000    Ohio  1.5   NaN
+two    2001    Ohio  1.7  -1.2
+three  2002    Ohio  3.6   NaN
+four   2001  Nevada  2.4  -1.5
+five   2002  Nevada  2.9  -1.7
+
+In [96]: frame2.columns
+Out[96]: Index(['year', 'state', 'pop', 'debt'], dtype='object')
+
+In [97]: pop = {'Nevada': {2001:2.4, 2002: 2.9}, 'Ohio': {2000:1.5, 2001:1.7, 2002:3.6}}
+
+In [98]: pop
+Out[98]: {'Nevada': {2001: 2.4, 2002: 2.9}, 'Ohio': {2000: 1.5, 2001: 1.7, 2002: 3.6}}
+
+In [99]: frame3 = DataFrame(pop)
+
+In [100]: frame3
+Out[100]:
+      Nevada  Ohio
+2000     NaN   1.5
+2001     2.4   1.7
+2002     2.9   3.6
+
+In [101]: frame3.T
+Out[101]:
+        2000  2001  2002
+Nevada   NaN   2.4   2.9
+Ohio     1.5   1.7   3.6
+
+In [102]: DataFrame(pop, index=[2001,2002,2003])
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-102-34d43084232e> in <module>
+----> 1 DataFrame(pop, index=[2001,2002,2003])
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __init__(self, data, index, columns, dtype, copy)
+    346                                  dtype=dtype, copy=copy)
+    347         elif isinstance(data, dict):
+--> 348             mgr = self._init_dict(data, index, columns, dtype=dtype)
+    349         elif isinstance(data, ma.MaskedArray):
+    350             import numpy.ma.mrecords as mrecords
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _init_dict(self, data, index, columns, dtype)
+    457             arrays = [data[k] for k in keys]
+    458
+--> 459         return _arrays_to_mgr(arrays, data_names, index, columns, dtype=dtype)
+    460
+    461     def _init_ndarray(self, values, index, columns, dtype=None, copy=False):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _arrays_to_mgr(arrays, arr_names, index, columns, dtype)
+   7357
+   7358     # don't force copy because getting jammed in an ndarray anyway
+-> 7359     arrays = _homogenize(arrays, index, dtype)
+   7360
+   7361     # from BlockManager perspective
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _homogenize(data, index, dtype)
+   7659             if isinstance(v, dict):
+   7660                 if oindex is None:
+-> 7661                     oindex = index.astype('O')
+   7662
+   7663                 if isinstance(index, (DatetimeIndex, TimedeltaIndex)):
+
+AttributeError: 'list' object has no attribute 'astype'
+
+In [103]: DataFrame(pop)
+Out[103]:
+      Nevada  Ohio
+2000     NaN   1.5
+2001     2.4   1.7
+2002     2.9   3.6
+
+In [104]: DataFrame(pop,index=[2001,2002])
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-104-ae1774ad5323> in <module>
+----> 1 DataFrame(pop,index=[2001,2002])
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __init__(self, data, index, columns, dtype, copy)
+    346                                  dtype=dtype, copy=copy)
+    347         elif isinstance(data, dict):
+--> 348             mgr = self._init_dict(data, index, columns, dtype=dtype)
+    349         elif isinstance(data, ma.MaskedArray):
+    350             import numpy.ma.mrecords as mrecords
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _init_dict(self, data, index, columns, dtype)
+    457             arrays = [data[k] for k in keys]
+    458
+--> 459         return _arrays_to_mgr(arrays, data_names, index, columns, dtype=dtype)
+    460
+    461     def _init_ndarray(self, values, index, columns, dtype=None, copy=False):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _arrays_to_mgr(arrays, arr_names, index, columns, dtype)
+   7357
+   7358     # don't force copy because getting jammed in an ndarray anyway
+-> 7359     arrays = _homogenize(arrays, index, dtype)
+   7360
+   7361     # from BlockManager perspective
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _homogenize(data, index, dtype)
+   7659             if isinstance(v, dict):
+   7660                 if oindex is None:
+-> 7661                     oindex = index.astype('O')
+   7662
+   7663                 if isinstance(index, (DatetimeIndex, TimedeltaIndex)):
+
+AttributeError: 'list' object has no attribute 'astype'
+
+In [105]: pop
+Out[105]: {'Nevada': {2001: 2.4, 2002: 2.9}, 'Ohio': {2000: 1.5, 2001: 1.7, 2002: 3.6}}
+
+In [106]: DataFrame(pop, index=[2001,2002,2003])
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-106-34d43084232e> in <module>
+----> 1 DataFrame(pop, index=[2001,2002,2003])
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __init__(self, data, index, columns, dtype, copy)
+    346                                  dtype=dtype, copy=copy)
+    347         elif isinstance(data, dict):
+--> 348             mgr = self._init_dict(data, index, columns, dtype=dtype)
+    349         elif isinstance(data, ma.MaskedArray):
+    350             import numpy.ma.mrecords as mrecords
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _init_dict(self, data, index, columns, dtype)
+    457             arrays = [data[k] for k in keys]
+    458
+--> 459         return _arrays_to_mgr(arrays, data_names, index, columns, dtype=dtype)
+    460
+    461     def _init_ndarray(self, values, index, columns, dtype=None, copy=False):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _arrays_to_mgr(arrays, arr_names, index, columns, dtype)
+   7357
+   7358     # don't force copy because getting jammed in an ndarray anyway
+-> 7359     arrays = _homogenize(arrays, index, dtype)
+   7360
+   7361     # from BlockManager perspective
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _homogenize(data, index, dtype)
+   7659             if isinstance(v, dict):
+   7660                 if oindex is None:
+-> 7661                     oindex = index.astype('O')
+   7662
+   7663                 if isinstance(index, (DatetimeIndex, TimedeltaIndex)):
+
+AttributeError: 'list' object has no attribute 'astype'
+
+In [107]: ?DataFrame
+
+In [108]: DataFrame(pop, index = Series([2001,2002,2003]))
+Out[108]:
+      Nevada  Ohio
+2001     2.4   1.7
+2002     2.9   3.6
+2003     NaN   NaN
+
+In [109]: DataFrame(pop, columns=['Nevada','Ohio'],index=[2001,2002,2003])
+Out[109]:
+      Nevada  Ohio
+2001     2.4   1.7
+2002     2.9   3.6
+2003     NaN   NaN
+
+In [110]: frame3
+Out[110]:
+      Nevada  Ohio
+2000     NaN   1.5
+2001     2.4   1.7
+2002     2.9   3.6
+
+In [111]: frame3['Ohio']
+Out[111]:
+2000    1.5
+2001    1.7
+2002    3.6
+Name: Ohio, dtype: float64
+
+In [112]: frame3['Ohio'][:-1]
+Out[112]:
+2000    1.5
+2001    1.7
+Name: Ohio, dtype: float64
+
+In [113]: frame3['Ohio'][:-1].dtype
+Out[113]: dtype('float64')
+
+In [114]: frame3['Ohio'][:-1].index
+Out[114]: Int64Index([2000, 2001], dtype='int64')
+
+In [115]: frame3['Ohio'][:-1].class
+  File "<ipython-input-115-ca3ba92bbec5>", line 1
+    frame3['Ohio'][:-1].class
+                            ^
+SyntaxError: invalid syntax
+
+
+In [116]: pdata = {'Ohio': frame3['Ohio'][:-1],'Nevada':frame3['Nevada'][:2]}
+
+In [117]: pdata
+Out[117]:
+{'Nevada': 2000    NaN
+ 2001    2.4
+ Name: Nevada, dtype: float64, 'Ohio': 2000    1.5
+ 2001    1.7
+ Name: Ohio, dtype: float64}
+
+In [118]: DataFrame(pdata)
+Out[118]:
+      Nevada  Ohio
+2000     NaN   1.5
+2001     2.4   1.7
+
+In [119]: frame3
+Out[119]:
+      Nevada  Ohio
+2000     NaN   1.5
+2001     2.4   1.7
+2002     2.9   3.6
+
+In [120]: frame3.index.name='year'
+
+In [121]: frame3.columns.name='state'
+
+In [122]: frame3
+Out[122]:
+state  Nevada  Ohio
+year
+2000      NaN   1.5
+2001      2.4   1.7
+2002      2.9   3.6
+
+In [123]: frame3
+Out[123]:
+state  Nevada  Ohio
+year
+2000      NaN   1.5
+2001      2.4   1.7
+2002      2.9   3.6
+
+In [124]: frame3.values
+Out[124]:
+array([[nan, 1.5],
+       [2.4, 1.7],
+       [2.9, 3.6]])
+
+In [125]: frame2.values
+Out[125]:
+array([[2000, 'Ohio', 1.5, nan],
+       [2001, 'Ohio', 1.7, -1.2],
+       [2002, 'Ohio', 3.6, nan],
+       [2001, 'Nevada', 2.4, -1.5],
+       [2002, 'Nevada', 2.9, -1.7]], dtype=object)
+append               Concatenate with additional Index objects, producing a new Index
+diff                 Compute set difference as an Index
+intersection         Compute set intersection
+union                Compute set union
+isin                 Compute boolean array indicating whether each value is contained in the passed collection
+delete               Compute new Index with element at index i deleted
+drop                 Compute new index by deleting passed values
+insert               Compute new Index by inserting element at index i
+is_monotonic         Returns True if each element is greater than or equal to the previous element
+is_unique            Returns True if the Index has no duplicate values
+unique               Compute the array of unique values in the Index
+
+In [126]:
+
+In [126]: # index object
+
+In [127]: obj = Series(range(3),index=['a','b','c'])
+
+In [128]: obj
+Out[128]:
+a    0
+b    1
+c    2
+dtype: int64
+
+In [129]: index = obj.index
+
+In [130]: index
+Out[130]: Index(['a', 'b', 'c'], dtype='object')
+
+In [131]: obj.values
+Out[131]: array([0, 1, 2])
+
+In [132]: index[1:]
+Out[132]: Index(['b', 'c'], dtype='object')
+
+In [133]: index[1]
+Out[133]: 'b'
+
+In [134]: index[1] = 'd'
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-134-a452e55ce13b> in <module>
+----> 1 index[1] = 'd'
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in __setitem__(self, key, value)
+   2063
+   2064     def __setitem__(self, key, value):
+-> 2065         raise TypeError("Index does not support mutable operations")
+   2066
+   2067     def __getitem__(self, key):
+
+TypeError: Index does not support mutable operations
+
+In [135]: index[1]
+Out[135]: 'b'
+
+In [136]: index[1]='d'
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-136-8be6e68dba2d> in <module>
+----> 1 index[1]='d'
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in __setitem__(self, key, value)
+   2063
+   2064     def __setitem__(self, key, value):
+-> 2065         raise TypeError("Index does not support mutable operations")
+   2066
+   2067     def __getitem__(self, key):
+
+TypeError: Index does not support mutable operations
+
+In [137]: index = pd.Index(np.arange(3))
+
+In [138]: index
+Out[138]: Int64Index([0, 1, 2], dtype='int64')
+
+In [139]: frame3
+Out[139]:
+state  Nevada  Ohio
+year
+2000      NaN   1.5
+2001      2.4   1.7
+2002      2.9   3.6
+
+In [140]: 'Ohio ' in frame3.column
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-140-ddef7d51769c> in <module>
+----> 1 'Ohio ' in frame3.column
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in __getattr__(self, name)
+   4374             if self._info_axis._can_hold_identifiers_and_holds_name(name):
+   4375                 return self[name]
+-> 4376             return object.__getattribute__(self, name)
+   4377
+   4378     def __setattr__(self, name, value):
+
+AttributeError: 'DataFrame' object has no attribute 'column'
+
+In [141]: 'Ohio ' in frame3.columns
+Out[141]: False
+
+In [142]: 'Ohio' in frame3.columns
+Out[142]: True
+
+In [143]: frame3
+Out[143]:
+state  Nevada  Ohio
+year
+2000      NaN   1.5
+2001      2.4   1.7
+2002      2.9   3.6
+
+In [144]: '2003' in frame3.index
+Out[144]: False
+
+In [145]: '2002' in frame3.index
+Out[145]: False
+
+In [146]: 2002 in frame3.index
+Out[146]: True
+
+In [147]: # Reindexing
+
+In [148]: obj = Series([4.5, 7.2, -5.3, 3.6], index=['d','b','a','c'])
+
+In [149]: obj
+Out[149]:
+d    4.5
+b    7.2
+a   -5.3
+c    3.6
+dtype: float64
+
+In [150]: obj2 = obj.reindex(['a','b','c','d','e'])
+
+In [151]: obj2
+Out[151]:
+a   -5.3
+b    7.2
+c    3.6
+d    4.5
+e    NaN
+dtype: float64
+
+In [152]: obj.reindex(['a','b','c','d','e'],fill_value=0)
+Out[152]:
+a   -5.3
+b    7.2
+c    3.6
+d    4.5
+e    0.0
+dtype: float64
+
+In [153]: obj3=Series(['blue','purple','yellow'],index=[0,2,4])
+
+In [154]: obj3
+Out[154]:
+0      blue
+2    purple
+4    yellow
+dtype: object
+
+In [155]: obj3.reindex(range(6), method='ffill')
+Out[155]:
+0      blue
+1      blue
+2    purple
+3    purple
+4    yellow
+5    yellow
+dtype: object
+
+In [156]: obj3.reindex(range(6), method='bfill')
+Out[156]:
+0      blue
+1    purple
+2    purple
+3    yellow
+4    yellow
+5       NaN
+dtype: object
+
+In [157]: np.arange(9).reshape((3,3))
+Out[157]:
+array([[0, 1, 2],
+       [3, 4, 5],
+       [6, 7, 8]])
+
+In [158]: frame = DataFrame(np.arange(9).reshape((3,3)), index=['a','c','d'],columns=['Ohio','Texas','
+     ...: California'])
+
+In [159]: frame
+Out[159]:
+   Ohio  Texas  California
+a     0      1           2
+c     3      4           5
+d     6      7           8
+
+In [160]: frame2 = frame.reindex(['a','b','c','d'])
+
+In [161]: frame2
+Out[161]:
+   Ohio  Texas  California
+a   0.0    1.0         2.0
+b   NaN    NaN         NaN
+c   3.0    4.0         5.0
+d   6.0    7.0         8.0
+
+In [162]: states = ['Texas','Utah','California']
+
+In [163]: frame.reindex(columns=states)
+Out[163]:
+   Texas  Utah  California
+a      1   NaN           2
+c      4   NaN           5
+d      7   NaN           8
+
+In [164]: frame
+Out[164]:
+   Ohio  Texas  California
+a     0      1           2
+c     3      4           5
+d     6      7           8
+
+In [165]: frame.reindex(index=['a','b','c','d'],method='ffill',columns=states)
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+<ipython-input-165-ce4d39d82f08> in <module>
+----> 1 frame.reindex(index=['a','b','c','d'],method='ffill',columns=states)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/util/_decorators.py in wrapper(*args, **kwargs)
+    185         @wraps(func)
+    186         def wrapper(*args, **kwargs):
+--> 187             return func(*args, **kwargs)
+    188
+    189         if not PY2:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in reindex(self, *args, **kwargs)
+   3564         kwargs.pop('axis', None)
+   3565         kwargs.pop('labels', None)
+-> 3566         return super(DataFrame, self).reindex(**kwargs)
+   3567
+   3568     @Appender(_shared_docs['reindex_axis'] % _shared_doc_kwargs)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in reindex(self, *args, **kwargs)
+   3687         # perform the reindex on the axes
+   3688         return self._reindex_axes(axes, level, limit, tolerance, method,
+-> 3689                                   fill_value, copy).__finalize__(self)
+   3690
+   3691     def _reindex_axes(self, axes, level, limit, tolerance, method, fill_value,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _reindex_axes(self, axes, level, limit, tolerance, method, fill_value, copy)
+   3494         if columns is not None:
+   3495             frame = frame._reindex_columns(columns, method, copy, level,
+-> 3496                                            fill_value, limit, tolerance)
+   3497
+   3498         index = axes['index']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _reindex_columns(self, new_columns, method, copy, level, fill_value, limit, tolerance)
+   3516         new_columns, indexer = self.columns.reindex(new_columns, method=method,
+   3517                                                     level=level, limit=limit,
+-> 3518                                                     tolerance=tolerance)
+   3519         return self._reindex_with_indexers({1: [new_columns, indexer]},
+   3520                                            copy=copy, fill_value=fill_value,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in reindex(self, target, method, level, limit, tolerance)
+   3620                     indexer = self.get_indexer(target, method=method,
+   3621                                                limit=limit,
+-> 3622                                                tolerance=tolerance)
+   3623                 else:
+   3624                     if method is not None or limit is not None:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_indexer(self, target, method, limit, tolerance)
+   3246
+   3247         if method == 'pad' or method == 'backfill':
+-> 3248             indexer = self._get_fill_indexer(target, method, limit, tolerance)
+   3249         elif method == 'nearest':
+   3250             indexer = self._get_nearest_indexer(target, limit, tolerance)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _get_fill_indexer(self, target, method, limit, tolerance)
+   3276         else:
+   3277             indexer = self._get_fill_indexer_searchsorted(target, method,
+-> 3278                                                           limit)
+   3279         if tolerance is not None:
+   3280             indexer = self._filter_indexer_tolerance(target._ndarray_values,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _get_fill_indexer_searchsorted(self, target, method, limit)
+   3298         nonexact = (indexer == -1)
+   3299         indexer[nonexact] = self._searchsorted_monotonic(target[nonexact],
+-> 3300                                                          side)
+   3301         if side == 'left':
+   3302             # searchsorted returns "indices into a sorted array such that,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _searchsorted_monotonic(self, label, side)
+   4198             return len(self) - pos
+   4199
+-> 4200         raise ValueError('index must be monotonic increasing or decreasing')
+   4201
+   4202     def _get_loc_only_exact_matches(self, key):
+
+ValueError: index must be monotonic increasing or decreasing
+
+In [166]: frame
+Out[166]:
+   Ohio  Texas  California
+a     0      1           2
+c     3      4           5
+d     6      7           8
+
+In [167]: frame.reindex(method='ffill',columns=states)
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+<ipython-input-167-000c335c6c76> in <module>
+----> 1 frame.reindex(method='ffill',columns=states)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/util/_decorators.py in wrapper(*args, **kwargs)
+    185         @wraps(func)
+    186         def wrapper(*args, **kwargs):
+--> 187             return func(*args, **kwargs)
+    188
+    189         if not PY2:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in reindex(self, *args, **kwargs)
+   3564         kwargs.pop('axis', None)
+   3565         kwargs.pop('labels', None)
+-> 3566         return super(DataFrame, self).reindex(**kwargs)
+   3567
+   3568     @Appender(_shared_docs['reindex_axis'] % _shared_doc_kwargs)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in reindex(self, *args, **kwargs)
+   3687         # perform the reindex on the axes
+   3688         return self._reindex_axes(axes, level, limit, tolerance, method,
+-> 3689                                   fill_value, copy).__finalize__(self)
+   3690
+   3691     def _reindex_axes(self, axes, level, limit, tolerance, method, fill_value,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _reindex_axes(self, axes, level, limit, tolerance, method, fill_value, copy)
+   3494         if columns is not None:
+   3495             frame = frame._reindex_columns(columns, method, copy, level,
+-> 3496                                            fill_value, limit, tolerance)
+   3497
+   3498         index = axes['index']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _reindex_columns(self, new_columns, method, copy, level, fill_value, limit, tolerance)
+   3516         new_columns, indexer = self.columns.reindex(new_columns, method=method,
+   3517                                                     level=level, limit=limit,
+-> 3518                                                     tolerance=tolerance)
+   3519         return self._reindex_with_indexers({1: [new_columns, indexer]},
+   3520                                            copy=copy, fill_value=fill_value,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in reindex(self, target, method, level, limit, tolerance)
+   3620                     indexer = self.get_indexer(target, method=method,
+   3621                                                limit=limit,
+-> 3622                                                tolerance=tolerance)
+   3623                 else:
+   3624                     if method is not None or limit is not None:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_indexer(self, target, method, limit, tolerance)
+   3246
+   3247         if method == 'pad' or method == 'backfill':
+-> 3248             indexer = self._get_fill_indexer(target, method, limit, tolerance)
+   3249         elif method == 'nearest':
+   3250             indexer = self._get_nearest_indexer(target, limit, tolerance)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _get_fill_indexer(self, target, method, limit, tolerance)
+   3276         else:
+   3277             indexer = self._get_fill_indexer_searchsorted(target, method,
+-> 3278                                                           limit)
+   3279         if tolerance is not None:
+   3280             indexer = self._filter_indexer_tolerance(target._ndarray_values,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _get_fill_indexer_searchsorted(self, target, method, limit)
+   3298         nonexact = (indexer == -1)
+   3299         indexer[nonexact] = self._searchsorted_monotonic(target[nonexact],
+-> 3300                                                          side)
+   3301         if side == 'left':
+   3302             # searchsorted returns "indices into a sorted array such that,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _searchsorted_monotonic(self, label, side)
+   4198             return len(self) - pos
+   4199
+-> 4200         raise ValueError('index must be monotonic increasing or decreasing')
+   4201
+   4202     def _get_loc_only_exact_matches(self, key):
+
+ValueError: index must be monotonic increasing or decreasing
+
+In [168]: DataFrame.reindex
+Out[168]: <function pandas.core.frame.DataFrame.reindex(self, labels=None, index=None, columns=None, axis=None, method=None, copy=True, level=None, fill_value=nan, limit=None, tolerance=None)>
+
+In [169]: frame.reindex(index=['a','b','c','d'],columns=states)
+Out[169]:
+   Texas  Utah  California
+a    1.0   NaN         2.0
+b    NaN   NaN         NaN
+c    4.0   NaN         5.0
+d    7.0   NaN         8.0
+
+In [170]: frame.reindex(index=['a','b','c','d'],columns=states,method='ffill')
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+<ipython-input-170-04ff5b369d50> in <module>
+----> 1 frame.reindex(index=['a','b','c','d'],columns=states,method='ffill')
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/util/_decorators.py in wrapper(*args, **kwargs)
+    185         @wraps(func)
+    186         def wrapper(*args, **kwargs):
+--> 187             return func(*args, **kwargs)
+    188
+    189         if not PY2:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in reindex(self, *args, **kwargs)
+   3564         kwargs.pop('axis', None)
+   3565         kwargs.pop('labels', None)
+-> 3566         return super(DataFrame, self).reindex(**kwargs)
+   3567
+   3568     @Appender(_shared_docs['reindex_axis'] % _shared_doc_kwargs)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in reindex(self, *args, **kwargs)
+   3687         # perform the reindex on the axes
+   3688         return self._reindex_axes(axes, level, limit, tolerance, method,
+-> 3689                                   fill_value, copy).__finalize__(self)
+   3690
+   3691     def _reindex_axes(self, axes, level, limit, tolerance, method, fill_value,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _reindex_axes(self, axes, level, limit, tolerance, method, fill_value, copy)
+   3494         if columns is not None:
+   3495             frame = frame._reindex_columns(columns, method, copy, level,
+-> 3496                                            fill_value, limit, tolerance)
+   3497
+   3498         index = axes['index']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _reindex_columns(self, new_columns, method, copy, level, fill_value, limit, tolerance)
+   3516         new_columns, indexer = self.columns.reindex(new_columns, method=method,
+   3517                                                     level=level, limit=limit,
+-> 3518                                                     tolerance=tolerance)
+   3519         return self._reindex_with_indexers({1: [new_columns, indexer]},
+   3520                                            copy=copy, fill_value=fill_value,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in reindex(self, target, method, level, limit, tolerance)
+   3620                     indexer = self.get_indexer(target, method=method,
+   3621                                                limit=limit,
+-> 3622                                                tolerance=tolerance)
+   3623                 else:
+   3624                     if method is not None or limit is not None:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_indexer(self, target, method, limit, tolerance)
+   3246
+   3247         if method == 'pad' or method == 'backfill':
+-> 3248             indexer = self._get_fill_indexer(target, method, limit, tolerance)
+   3249         elif method == 'nearest':
+   3250             indexer = self._get_nearest_indexer(target, limit, tolerance)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _get_fill_indexer(self, target, method, limit, tolerance)
+   3276         else:
+   3277             indexer = self._get_fill_indexer_searchsorted(target, method,
+-> 3278                                                           limit)
+   3279         if tolerance is not None:
+   3280             indexer = self._filter_indexer_tolerance(target._ndarray_values,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _get_fill_indexer_searchsorted(self, target, method, limit)
+   3298         nonexact = (indexer == -1)
+   3299         indexer[nonexact] = self._searchsorted_monotonic(target[nonexact],
+-> 3300                                                          side)
+   3301         if side == 'left':
+   3302             # searchsorted returns "indices into a sorted array such that,
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _searchsorted_monotonic(self, label, side)
+   4198             return len(self) - pos
+   4199
+-> 4200         raise ValueError('index must be monotonic increasing or decreasing')
+   4201
+   4202     def _get_loc_only_exact_matches(self, key):
+
+ValueError: index must be monotonic increasing or decreasing
+
+In [171]: frame.reindex(index=['a','b','c','d'],columns=states).ffill()
+Out[171]:
+   Texas  Utah  California
+a    1.0   NaN         2.0
+b    1.0   NaN         2.0
+c    4.0   NaN         5.0
+d    7.0   NaN         8.0
+
+In [172]: frame.ix[['a','b','c','d'],states]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: FutureWarning:
+Passing list-likes to .loc or [] with any missing label will raise
+KeyError in the future, you can use .reindex() as an alternative.
+
+See the documentation here:
+https://pandas.pydata.org/pandas-docs/stable/indexing.html#deprecate-loc-reindex-listlike
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[172]:
+   Texas  Utah  California
+a    1.0   NaN         2.0
+b    NaN   NaN         NaN
+c    4.0   NaN         5.0
+d    7.0   NaN         8.0
+
+In [173]: frame.loc[['a','b','c','d'],states]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: FutureWarning:
+Passing list-likes to .loc or [] with any missing label will raise
+KeyError in the future, you can use .reindex() as an alternative.
+
+See the documentation here:
+https://pandas.pydata.org/pandas-docs/stable/indexing.html#deprecate-loc-reindex-listlike
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[173]:
+   Texas  Utah  California
+a    1.0   NaN         2.0
+b    NaN   NaN         NaN
+c    4.0   NaN         5.0
+d    7.0   NaN         8.0
+
+In [174]: ?DataFrame.reindex
+
+In [175]:
+
