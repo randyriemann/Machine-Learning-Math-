@@ -1,1 +1,250 @@
 # basic operation of numpy
+import numpy as np
+
+In [7]: data =  np.random.randn(2,2)
+
+In [8]: data
+Out[8]:
+array([[ 1.36246426,  0.62101354],
+       [-1.29895462,  1.32956942]])
+
+In [9]: data
+Out[9]:
+array([[ 1.36246426,  0.62101354],
+       [-1.29895462,  1.32956942]])
+
+In [10]: data*10
+Out[10]:
+array([[ 13.62464263,   6.21013541],
+       [-12.98954615,  13.29569418]])
+
+In [11]: data + data
+Out[11]:
+array([[ 2.72492853,  1.24202708],
+       [-2.59790923,  2.65913884]])
+
+In [12]: data.shape
+Out[12]: (2, 2)
+
+In [13]: data.dtype
+Out[13]: dtype('float64')
+
+
+# creating ndarrays
+In [1]: import numpy as np
+
+In [2]: data1 = [6, 7.5, 8, 0, 1]
+
+In [3]: arr1 = np.array(data1)
+
+In [4]: arr1
+Out[4]: array([6. , 7.5, 8. , 0. , 1. ])
+
+In [5]: data2 = [[1,2,3,4],[5,6,7,8]]
+
+In [6]: arr2 = np.array(data2)
+
+In [7]: arr2
+Out[7]:
+array([[1, 2, 3, 4],
+       [5, 6, 7, 8]])
+
+In [8]: arr2.ndim
+Out[8]: 2
+
+In [10]: arr1.ndim
+Out[10]: 1
+
+In [11]: arr2.shape
+Out[11]: (2, 4)
+
+In [12]: arr1.shape
+Out[12]: (5,)
+
+In [13]: arr1.dtype
+Out[13]: dtype('float64')
+
+In [14]: arr2.dtype
+Out[14]: dtype('int64')
+
+In [15]: np.zeros(10)
+Out[15]: array([0., 0., 0., 0., 0., 0., 0., 0., 0., 0.])
+
+In [16]: np.zeros((3,6))
+Out[16]:
+array([[0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0.],
+       [0., 0., 0., 0., 0., 0.]])
+
+In [17]: np.empty((2,3,2))
+Out[17]:
+array([[[6.91244489e-310, 6.91244490e-310],
+        [6.91244489e-310, 6.91244117e-310],
+        [6.91244484e-310, 6.91244488e-310]],
+
+       [[6.91244320e-310, 6.91244361e-310],
+        [6.91244490e-310, 6.91244488e-310],
+        [6.91244488e-310, 6.91244229e-310]]])
+
+In [18]: np.arange(15)
+Out[18]: array([ 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14])
+
+In [19]: data_1 = [1,2,3]
+
+In [20]: data_1_array = np.asarray(data_1)
+
+In [21]: data_1_array
+Out[21]: array([1, 2, 3])
+
+In [22]: data_1
+Out[22]: [1, 2, 3]
+
+"""
+array
+Convert input data (list, tuple, array, or other sequence type) to an ndarray either by
+inferring a dtype or explicitly specifying a dtype. Copies the input data by default
+
+asarray
+Convert input to ndarray, but do not copy if the input is already an ndarray
+
+arange 
+Like the built-in range but returns an ndarray instead of a list
+
+ones, ones_like
+Produce an array of all 1’s with the given shape and dtype. ones_like takes another
+array and produces a ones array of the same shape and dtype
+
+zeros, zeros_like
+Like ones and ones_like but producing arrays of 0’s instead
+
+empty, empty_like
+Create new arrays by allocating new memory, but do not populate with any values like
+ones and zeros
+
+eye, identity
+Create a square N x N identity matrix (1’s on the diagonal and 0’s elsewhere)
+"""
+
+# data types for ndarrays
+
+In [23]: arr1 = np.array([1,2,3],dtype=np.float64)
+
+In [24]: arr2 = np.array([1,2,3],dtype=np.int32)
+
+In [25]: arr1.dtype
+Out[25]: dtype('float64')
+
+In [26]: arr2.dtype
+Out[26]: dtype('int32')
+
+int8, uint8 i1, u1 Signed and unsigned 8-bit (1 byte) integer types
+int16, uint16 i2, u2 Signed and unsigned 16-bit integer types
+int32, uint32 i4, u4 Signed and unsigned 32-bit integer types
+int64, uint64 i8, u8 Signed and unsigned 32-bit integer types
+float16 f2 Half-precision floating point
+float32 f4 or f Standard single-precision floating point. Compatible with C float
+float64, float128 f8 or d Standard double-precision floating point. Compatible with C double and Python float object
+float128 f16 or g Extended-precision floating point
+
+complex64, complex128,complex256 c8, c16,c32 Complex numbers represented by two 32, 64, or 128 floats, respectively
+
+bool ?Boolean type storing True and False values
+object O Python object type 
+string_ S  Fixed-length string type (1 byte per character). For example, to create a string dtype with length 10, use 'S10'
+unicode_ U Fixed-length unicode type (number of bytes platform specific). Same specification semantics as string_ (e.g. 'U10').
+
+# astype method
+In [27]: arr = np.array([1,2,3,4,5])
+
+In [28]: arr.dtype
+Out[28]: dtype('int64')
+
+In [29]: float_arr = arr.astype(np.float64)
+
+In [30]: float_arr.dtype
+Out[30]: dtype('float64')
+
+In [31]: arr = np.array([3.7, -1.2, -2.6, 0.5, 12.9, 10.1])
+
+In [32]: arr
+Out[32]: array([ 3.7, -1.2, -2.6,  0.5, 12.9, 10.1])
+
+In [33]: arr.astype(np.int32)
+Out[33]: array([ 3, -1, -2,  0, 12, 10], dtype=int32)
+
+integers were cast to floating point. If I cast some floating point numbers
+to be of integer dtype, the decimal part will be truncated
+
+In [34]: numeric_strings = np.array(['1.25', '-9.6','42'], dtype=np.string_)
+
+In [36]: numeric_strings
+Out[36]: array([b'1.25', b'-9.6', b'42'], dtype='|S4')
+
+In [38]: numeric_strings.astype(float)
+Out[38]: array([ 1.25, -9.6 , 42.  ])
+
+
+# Operations between Arrays and Scalars
+
+
+
+
+In [38]: numeric_strings.astype(float)
+Out[38]: array([ 1.25, -9.6 , 42.  ])
+
+In [39]: int_array = np.arange(10)
+
+In [40]: calibers = np.array([.22, .270, .357, .380, .44, .50], dtype=np.float64)
+
+In [41]: int_array.astype(calibers.dtype)
+Out[41]: array([0., 1., 2., 3., 4., 5., 6., 7., 8., 9.])
+
+In [42]: empty_uint32 = np.empty(8, dtype='u4')
+
+In [43]: empty_uint32
+Out[43]:
+array([         0, 1075314688,          0, 1075707904,          0,
+       1075838976,          0, 1072693248], dtype=uint32)
+
+In [44]: empty_uint32.ndim
+Out[44]: 1
+
+In [45]: empty_uint32.shape
+Out[45]: (8,)
+
+In [46]: arr = np.array([[1.,2.,3.],[4.,5.,6.]])
+
+In [47]: arr
+Out[47]:
+array([[1., 2., 3.],
+       [4., 5., 6.]])
+
+In [48]: arr.dtype
+Out[48]: dtype('float64')
+
+In [49]: arr*arr
+Out[49]:
+array([[ 1.,  4.,  9.],
+       [16., 25., 36.]])
+In [50]: arr-arr
+Out[50]:
+array([[0., 0., 0.],
+       [0., 0., 0.]])
+
+In [51]: 1/arr
+Out[51]:
+array([[1.        , 0.5       , 0.33333333],
+       [0.25      , 0.2       , 0.16666667]])
+
+In [52]: arr*0.5
+Out[52]:
+array([[0.5, 1. , 1.5],
+       [2. , 2.5, 3. ]])
+
+In [53]: arr**0.5
+Out[53]:
+array([[1.        , 1.41421356, 1.73205081],
+       [2.        , 2.23606798, 2.44948974]])
+
+# Basic Indexing and Slicing
+
