@@ -1330,3 +1330,1689 @@ In [174]: ?DataFrame.reindex
 
 In [175]:
 
+
+
+
+
+###########################################
+In [1]: # dropping entries from an axis
+
+In [2]: import pandas
+
+In [3]: from pandas import Series, DataFrame
+
+In [4]: import numpy as np
+
+In [5]: obj = Series(np.arange(5.), index=['a','b','c','d','e'])
+
+In [6]: new_obj = obj.drop('c')
+
+In [7]: new_obj
+Out[7]:
+a    0.0
+b    1.0
+d    3.0
+e    4.0
+dtype: float64
+
+In [8]: obj
+Out[8]:
+a    0.0
+b    1.0
+c    2.0
+d    3.0
+e    4.0
+dtype: float64
+
+In [9]: obj.drop(['d','c'])
+Out[9]:
+a    0.0
+b    1.0
+e    4.0
+dtype: float64
+
+In [10]: # with DataFrame , index values can be deleted from either axis
+
+In [11]: data = DataFrame(np.arange(16.).reshape((4,4)),index=['Ohio','Colorado','Utah','New York'],co
+    ...: lumns=['one','two','three','four'])
+
+In [12]: data
+Out[12]:
+           one   two  three  four
+Ohio       0.0   1.0    2.0   3.0
+Colorado   4.0   5.0    6.0   7.0
+Utah       8.0   9.0   10.0  11.0
+New York  12.0  13.0   14.0  15.0
+
+In [13]: data.drop(['Colorado','Ohio'])
+Out[13]:
+           one   two  three  four
+Utah       8.0   9.0   10.0  11.0
+New York  12.0  13.0   14.0  15.0
+
+In [14]: data
+Out[14]:
+           one   two  three  four
+Ohio       0.0   1.0    2.0   3.0
+Colorado   4.0   5.0    6.0   7.0
+Utah       8.0   9.0   10.0  11.0
+New York  12.0  13.0   14.0  15.0
+
+In [15]: data.drop('two',axis=1)
+Out[15]:
+           one  three  four
+Ohio       0.0    2.0   3.0
+Colorado   4.0    6.0   7.0
+Utah       8.0   10.0  11.0
+New York  12.0   14.0  15.0
+
+In [16]: data.drop('two')
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+<ipython-input-16-bda5e8137ee9> in <module>
+----> 1 data.drop('two')
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in drop(self, labels, axis, in                                                                                                              dex, columns, level, inplace, errors)
+   3695                                            index=index, columns=columns,
+   3696                                            level=level, inplace=inplace,
+-> 3697                                            errors=errors)
+   3698
+   3699     @rewrite_axis_style_signature('mapper', [('copy', True),
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in drop(self, labels, axis,                                                                                                               index, columns, level, inplace, errors)
+   3109         for axis, labels in axes.items():
+   3110             if labels is not None:
+-> 3111                 obj = obj._drop_axis(labels, axis, level=level, errors=errors)
+   3112
+   3113         if inplace:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in _drop_axis(self, labels,                                                                                                               axis, level, errors)
+   3141                 new_axis = axis.drop(labels, level=level, errors=errors)
+   3142             else:
+-> 3143                 new_axis = axis.drop(labels, errors=errors)
+   3144             result = self.reindex(**{axis_name: new_axis})
+   3145
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in drop(self, labels, e                                                                                                              rrors)
+   4402             if errors != 'ignore':
+   4403                 raise KeyError(
+-> 4404                     '{} not found in axis'.format(labels[mask]))
+   4405             indexer = indexer[~mask]
+   4406         return self.delete(indexer)
+
+KeyError: "['two'] not found in axis"
+
+In [17]: data.drop('two',axis=1)
+Out[17]:
+           one  three  four
+Ohio       0.0    2.0   3.0
+Colorado   4.0    6.0   7.0
+Utah       8.0   10.0  11.0
+New York  12.0   14.0  15.0
+
+In [18]: data.drop(['two','four'],axis=1)
+Out[18]:
+           one  three
+Ohio       0.0    2.0
+Colorado   4.0    6.0
+Utah       8.0   10.0
+New York  12.0   14.0
+
+In [19]: # indexing, selection, and filtering
+
+In [20]: # Series indexing (obj[...]) works analogously to Numpy array indexing , except you can use
+    ...: the Series's index values instead of only integers.
+
+In [21]: obj = Series(np.arange(4.),index=['a','b','c','d'])
+
+In [22]: obj
+Out[22]:
+a    0.0
+b    1.0
+c    2.0
+d    3.0
+dtype: float64
+
+In [23]: obj['b']
+Out[23]: 1.0
+
+In [24]: obj[1]
+Out[24]: 1.0
+
+In [25]: obj[1]==obj['b']
+Out[25]: True
+
+In [26]: obj[2:4]
+Out[26]:
+c    2.0
+d    3.0
+dtype: float64
+
+In [27]: obj[['b','a','d']]
+Out[27]:
+b    1.0
+a    0.0
+d    3.0
+dtype: float64
+
+In [28]: obj[[1,3]]
+Out[28]:
+b    1.0
+d    3.0
+dtype: float64
+
+In [29]: obj[obj<2]
+Out[29]:
+a    0.0
+b    1.0
+dtype: float64
+
+In [30]: # slicing with labels behaves differentlt form normal Python slicing in that the endpoint is
+    ...: inclusive
+
+In [31]: obj['b':'c']
+Out[31]:
+b    1.0
+c    2.0
+dtype: float64
+
+In [32]: obj['b':'c'] = 5
+
+In [33]: obj
+Out[33]:
+a    0.0
+b    5.0
+c    5.0
+d    3.0
+dtype: float64
+
+In [34]: data = DataFrame(np.arange(16).reshape((4,4)),index=['Ohio','Colorado','Utah','New York'], co
+    ...: lumns=['one','two','three','four'])
+
+In [35]: data
+Out[35]:
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [36]: data['two']
+Out[36]:
+Ohio         1
+Colorado     5
+Utah         9
+New York    13
+Name: two, dtype: int64
+
+In [37]: data[['three','one']]
+Out[37]:
+          three  one
+Ohio          2    0
+Colorado      6    4
+Utah         10    8
+New York     14   12
+
+In [38]: data[:2]
+Out[38]:
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+
+In [39]: data['Ohio']
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3077             try:
+-> 3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 'Ohio'
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-39-5bb533c45536> in <module>
+----> 1 data['Ohio']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   2686             return self._getitem_multilevel(key)
+   2687         else:
+-> 2688             return self._getitem_column(key)
+   2689
+   2690     def _getitem_column(self, key):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _getitem_column(self, key)
+   2693         # get column
+   2694         if self.columns.is_unique:
+-> 2695             return self._get_item_cache(key)
+   2696
+   2697         # duplicate columns & possible reduce dimensionality
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in _get_item_cache(self, ite                                                                                                              m)
+   2487         res = cache.get(item)
+   2488         if res is None:
+-> 2489             values = self._data.get(item)
+   2490             res = self._box_item_values(item, values)
+   2491             cache[item] = res
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in get(self, item, fastpat                                                                                                              h)
+   4113
+   4114             if not isna(item):
+-> 4115                 loc = self.items.get_loc(item)
+   4116             else:
+   4117                 indexer = np.arange(len(self.items))[isna(self.items)]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+-> 3080                 return self._engine.get_loc(self._maybe_cast_indexer(key))
+   3081
+   3082         indexer = self.get_indexer([key], method=method, tolerance=tolerance)
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 'Ohio'
+
+In [40]: data
+Out[40]:
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [41]: data[0]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3077             try:
+-> 3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 0
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-41-80a4aab09c73> in <module>
+----> 1 data[0]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   2686             return self._getitem_multilevel(key)
+   2687         else:
+-> 2688             return self._getitem_column(key)
+   2689
+   2690     def _getitem_column(self, key):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _getitem_column(self, key)
+   2693         # get column
+   2694         if self.columns.is_unique:
+-> 2695             return self._get_item_cache(key)
+   2696
+   2697         # duplicate columns & possible reduce dimensionality
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in _get_item_cache(self, ite                                                                                                              m)
+   2487         res = cache.get(item)
+   2488         if res is None:
+-> 2489             values = self._data.get(item)
+   2490             res = self._box_item_values(item, values)
+   2491             cache[item] = res
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in get(self, item, fastpat                                                                                                              h)
+   4113
+   4114             if not isna(item):
+-> 4115                 loc = self.items.get_loc(item)
+   4116             else:
+   4117                 indexer = np.arange(len(self.items))[isna(self.items)]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+-> 3080                 return self._engine.get_loc(self._maybe_cast_indexer(key))
+   3081
+   3082         indexer = self.get_indexer([key], method=method, tolerance=tolerance)
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 0
+
+In [42]: data[1]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3077             try:
+-> 3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 1
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-42-c402bf503b75> in <module>
+----> 1 data[1]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   2686             return self._getitem_multilevel(key)
+   2687         else:
+-> 2688             return self._getitem_column(key)
+   2689
+   2690     def _getitem_column(self, key):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _getitem_column(self, key)
+   2693         # get column
+   2694         if self.columns.is_unique:
+-> 2695             return self._get_item_cache(key)
+   2696
+   2697         # duplicate columns & possible reduce dimensionality
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in _get_item_cache(self, ite                                                                                                              m)
+   2487         res = cache.get(item)
+   2488         if res is None:
+-> 2489             values = self._data.get(item)
+   2490             res = self._box_item_values(item, values)
+   2491             cache[item] = res
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in get(self, item, fastpat                                                                                                              h)
+   4113
+   4114             if not isna(item):
+-> 4115                 loc = self.items.get_loc(item)
+   4116             else:
+   4117                 indexer = np.arange(len(self.items))[isna(self.items)]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+-> 3080                 return self._engine.get_loc(self._maybe_cast_indexer(key))
+   3081
+   3082         indexer = self.get_indexer([key], method=method, tolerance=tolerance)
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 1
+
+In [43]: data[[1]]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+<ipython-input-43-ef098c89e942> in <module>
+----> 1 data[[1]]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   2680         if isinstance(key, (Series, np.ndarray, Index, list)):
+   2681             # either boolean or fancy integer index
+-> 2682             return self._getitem_array(key)
+   2683         elif isinstance(key, DataFrame):
+   2684             return self._getitem_frame(key)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _getitem_array(self, key)
+   2724             return self._take(indexer, axis=0)
+   2725         else:
+-> 2726             indexer = self.loc._convert_to_indexer(key, axis=1)
+   2727             return self._take(indexer, axis=1)
+   2728
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _convert_to_indexer(self                                                                                                              , obj, axis, is_setter)
+   1325                 if mask.any():
+   1326                     raise KeyError('{mask} not in index'
+-> 1327                                    .format(mask=objarr[mask]))
+   1328
+   1329                 return com._values_from_object(indexer)
+
+KeyError: '[1] not in index'
+
+In [44]: data[Ohio]
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-44-ecf50dff7f5e> in <module>
+----> 1 data[Ohio]
+
+NameError: name 'Ohio' is not defined
+
+In [45]: data[ohio]
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-45-1bdc2189a26f> in <module>
+----> 1 data[ohio]
+
+NameError: name 'ohio' is not defined
+
+In [46]: data['ohio']
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3077             try:
+-> 3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 'ohio'
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-46-3728935abc9d> in <module>
+----> 1 data['ohio']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   2686             return self._getitem_multilevel(key)
+   2687         else:
+-> 2688             return self._getitem_column(key)
+   2689
+   2690     def _getitem_column(self, key):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _getitem_column(self, key)
+   2693         # get column
+   2694         if self.columns.is_unique:
+-> 2695             return self._get_item_cache(key)
+   2696
+   2697         # duplicate columns & possible reduce dimensionality
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in _get_item_cache(self, ite                                                                                                              m)
+   2487         res = cache.get(item)
+   2488         if res is None:
+-> 2489             values = self._data.get(item)
+   2490             res = self._box_item_values(item, values)
+   2491             cache[item] = res
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in get(self, item, fastpat                                                                                                              h)
+   4113
+   4114             if not isna(item):
+-> 4115                 loc = self.items.get_loc(item)
+   4116             else:
+   4117                 indexer = np.arange(len(self.items))[isna(self.items)]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+-> 3080                 return self._engine.get_loc(self._maybe_cast_indexer(key))
+   3081
+   3082         indexer = self.get_indexer([key], method=method, tolerance=tolerance)
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 'ohio'
+
+In [47]: data
+Out[47]:
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [48]: data[['three']]
+Out[48]:
+          three
+Ohio          2
+Colorado      6
+Utah         10
+New York     14
+
+In [49]: data[:1]
+Out[49]:
+      one  two  three  four
+Ohio    0    1      2     3
+
+In [50]: data[:]
+Out[50]:
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [51]: data[:2]
+Out[51]:
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+
+In [52]: data[0:2]
+Out[52]:
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+
+In [53]: data[0:1]
+Out[53]:
+      one  two  three  four
+Ohio    0    1      2     3
+
+In [54]: data[1:1]
+Out[54]:
+Empty DataFrame
+Columns: [one, two, three, four]
+Index: []
+
+In [55]: data[data['three']>5]
+Out[55]:
+          one  two  three  four
+Colorado    4    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [56]: data
+Out[56]:
+          one  two  three  four
+Ohio        0    1      2     3
+Colorado    4    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [57]: data < 5
+Out[57]:
+            one    two  three   four
+Ohio       True   True   True   True
+Colorado   True  False  False  False
+Utah      False  False  False  False
+New York  False  False  False  False
+
+In [58]: data[data<5]=0
+
+In [59]: data
+Out[59]:
+          one  two  three  four
+Ohio        0    0      0     0
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [60]: data
+Out[60]:
+          one  two  three  four
+Ohio        0    0      0     0
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [61]: data.ix['Colorado',['two','three']]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[61]:
+two      5
+three    6
+Name: Colorado, dtype: int64
+
+In [62]: data.loc['Colorado',['two','three']]
+Out[62]:
+two      5
+three    6
+Name: Colorado, dtype: int64
+
+In [63]: data.loc[['Colorado','Utah'],[3,0,1]]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _multi_take(self, tup)
+    940                 self._validate_read_indexer(keyarr, indexer,
+--> 941                                             o._get_axis_number(axis))
+    942                 d[axis] = (keyarr, indexer)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_read_indexer(s                                                                                                              elf, key, indexer, axis)
+   1205                     u"None of [{key}] are in the [{axis}]".format(
+-> 1206                         key=key, axis=self.obj._get_axis_name(axis)))
+   1207
+
+KeyError: "None of [Int64Index([3, 0, 1], dtype='int64')] are in the [columns]"
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-63-b72706fa04d7> in <module>
+----> 1 data.loc[['Colorado','Utah'],[3,0,1]]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+    877         # ugly hack for GH #836
+    878         if self._multi_take_opportunity(tup):
+--> 879             return self._multi_take(tup)
+    880
+    881         # no shortcut needed
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _multi_take(self, tup)
+    943             return o._reindex_with_indexers(d, copy=True, allow_dups=True)
+    944         except (KeyError, IndexingError) as detail:
+--> 945             raise self._exception(detail)
+    946
+    947     def _convert_for_reindex(self, key, axis=None):
+
+KeyError: KeyError("None of [Int64Index([3, 0, 1], dtype='int64')] are in the [columns]",)
+
+In [64]: data.iloc[['Colorado','Utah'],[3,0,1]]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-64-00db07f466da> in <module>
+----> 1 data.iloc[['Colorado','Utah'],[3,0,1]]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+   2011     def _getitem_tuple(self, tup):
+   2012
+-> 2013         self._has_valid_tuple(tup)
+   2014         try:
+   2015             return self._getitem_lowerdim(tup)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _has_valid_tuple(self, k                                                                                                              ey)
+    220                 raise IndexingError('Too many indexers')
+    221             try:
+--> 222                 self._validate_key(k, i)
+    223             except ValueError:
+    224                 raise ValueError("Location based indexing can only have "
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_key(self, key,                                                                                                               axis)
+   1965             l = len(self.obj._get_axis(axis))
+   1966
+-> 1967             if len(arr) and (arr.max() >= l or arr.min() < -l):
+   1968                 raise IndexError("positional indexers are out-of-bounds")
+   1969         else:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/numpy/core/_methods.py in _amax(a, axis, out, keepd                                                                                                              ims, initial)
+     26 def _amax(a, axis=None, out=None, keepdims=False,
+     27           initial=_NoValue):
+---> 28     return umr_maximum(a, axis, None, out, keepdims, initial)
+     29
+     30 def _amin(a, axis=None, out=None, keepdims=False,
+
+TypeError: cannot perform reduce with flexible type
+
+In [65]: data.ix[['Colorado','Utah'],[3,0,1]]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[65]:
+          four  one  two
+Colorado     7    0    5
+Utah        11    8    9
+
+In [66]: data.loc[['Colorado','Utah'],[3,0,1]]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _multi_take(self, tup)
+    940                 self._validate_read_indexer(keyarr, indexer,
+--> 941                                             o._get_axis_number(axis))
+    942                 d[axis] = (keyarr, indexer)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_read_indexer(s                                                                                                              elf, key, indexer, axis)
+   1205                     u"None of [{key}] are in the [{axis}]".format(
+-> 1206                         key=key, axis=self.obj._get_axis_name(axis)))
+   1207
+
+KeyError: "None of [Int64Index([3, 0, 1], dtype='int64')] are in the [columns]"
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-66-b72706fa04d7> in <module>
+----> 1 data.loc[['Colorado','Utah'],[3,0,1]]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+    877         # ugly hack for GH #836
+    878         if self._multi_take_opportunity(tup):
+--> 879             return self._multi_take(tup)
+    880
+    881         # no shortcut needed
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _multi_take(self, tup)
+    943             return o._reindex_with_indexers(d, copy=True, allow_dups=True)
+    944         except (KeyError, IndexingError) as detail:
+--> 945             raise self._exception(detail)
+    946
+    947     def _convert_for_reindex(self, key, axis=None):
+
+KeyError: KeyError("None of [Int64Index([3, 0, 1], dtype='int64')] are in the [columns]",)
+
+In [67]: data.loc[['Colorado','Utah'],Series([3,0,1])]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _multi_take(self, tup)
+    940                 self._validate_read_indexer(keyarr, indexer,
+--> 941                                             o._get_axis_number(axis))
+    942                 d[axis] = (keyarr, indexer)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_read_indexer(s                                                                                                              elf, key, indexer, axis)
+   1205                     u"None of [{key}] are in the [{axis}]".format(
+-> 1206                         key=key, axis=self.obj._get_axis_name(axis)))
+   1207
+
+KeyError: "None of [Int64Index([3, 0, 1], dtype='int64')] are in the [columns]"
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-67-5f3c7cdfb8e3> in <module>
+----> 1 data.loc[['Colorado','Utah'],Series([3,0,1])]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+    877         # ugly hack for GH #836
+    878         if self._multi_take_opportunity(tup):
+--> 879             return self._multi_take(tup)
+    880
+    881         # no shortcut needed
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _multi_take(self, tup)
+    943             return o._reindex_with_indexers(d, copy=True, allow_dups=True)
+    944         except (KeyError, IndexingError) as detail:
+--> 945             raise self._exception(detail)
+    946
+    947     def _convert_for_reindex(self, key, axis=None):
+
+KeyError: KeyError("None of [Int64Index([3, 0, 1], dtype='int64')] are in the [columns]",)
+
+In [68]: data.loc[['Colorado','Utah'],[3,0,1]]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _multi_take(self, tup)
+    940                 self._validate_read_indexer(keyarr, indexer,
+--> 941                                             o._get_axis_number(axis))
+    942                 d[axis] = (keyarr, indexer)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_read_indexer(s                                                                                                              elf, key, indexer, axis)
+   1205                     u"None of [{key}] are in the [{axis}]".format(
+-> 1206                         key=key, axis=self.obj._get_axis_name(axis)))
+   1207
+
+KeyError: "None of [Int64Index([3, 0, 1], dtype='int64')] are in the [columns]"
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-68-b72706fa04d7> in <module>
+----> 1 data.loc[['Colorado','Utah'],[3,0,1]]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+    877         # ugly hack for GH #836
+    878         if self._multi_take_opportunity(tup):
+--> 879             return self._multi_take(tup)
+    880
+    881         # no shortcut needed
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _multi_take(self, tup)
+    943             return o._reindex_with_indexers(d, copy=True, allow_dups=True)
+    944         except (KeyError, IndexingError) as detail:
+--> 945             raise self._exception(detail)
+    946
+    947     def _convert_for_reindex(self, key, axis=None):
+
+KeyError: KeyError("None of [Int64Index([3, 0, 1], dtype='int64')] are in the [columns]",)
+
+In [69]: data.iloc[['Colorado','Utah'],[3,0,1]]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-69-00db07f466da> in <module>
+----> 1 data.iloc[['Colorado','Utah'],[3,0,1]]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+   2011     def _getitem_tuple(self, tup):
+   2012
+-> 2013         self._has_valid_tuple(tup)
+   2014         try:
+   2015             return self._getitem_lowerdim(tup)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _has_valid_tuple(self, k                                                                                                              ey)
+    220                 raise IndexingError('Too many indexers')
+    221             try:
+--> 222                 self._validate_key(k, i)
+    223             except ValueError:
+    224                 raise ValueError("Location based indexing can only have "
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_key(self, key,                                                                                                               axis)
+   1965             l = len(self.obj._get_axis(axis))
+   1966
+-> 1967             if len(arr) and (arr.max() >= l or arr.min() < -l):
+   1968                 raise IndexError("positional indexers are out-of-bounds")
+   1969         else:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/numpy/core/_methods.py in _amax(a, axis, out, keepd                                                                                                              ims, initial)
+     26 def _amax(a, axis=None, out=None, keepdims=False,
+     27           initial=_NoValue):
+---> 28     return umr_maximum(a, axis, None, out, keepdims, initial)
+     29
+     30 def _amin(a, axis=None, out=None, keepdims=False,
+
+TypeError: cannot perform reduce with flexible type
+
+In [70]: data.iloc[['Colorado','Utah'],Series([3,0,1])]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-70-6c4e0499eeca> in <module>
+----> 1 data.iloc[['Colorado','Utah'],Series([3,0,1])]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+   2011     def _getitem_tuple(self, tup):
+   2012
+-> 2013         self._has_valid_tuple(tup)
+   2014         try:
+   2015             return self._getitem_lowerdim(tup)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _has_valid_tuple(self, k                                                                                                              ey)
+    220                 raise IndexingError('Too many indexers')
+    221             try:
+--> 222                 self._validate_key(k, i)
+    223             except ValueError:
+    224                 raise ValueError("Location based indexing can only have "
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_key(self, key,                                                                                                               axis)
+   1965             l = len(self.obj._get_axis(axis))
+   1966
+-> 1967             if len(arr) and (arr.max() >= l or arr.min() < -l):
+   1968                 raise IndexError("positional indexers are out-of-bounds")
+   1969         else:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/numpy/core/_methods.py in _amax(a, axis, out, keepd                                                                                                              ims, initial)
+     26 def _amax(a, axis=None, out=None, keepdims=False,
+     27           initial=_NoValue):
+---> 28     return umr_maximum(a, axis, None, out, keepdims, initial)
+     29
+     30 def _amin(a, axis=None, out=None, keepdims=False,
+
+TypeError: cannot perform reduce with flexible type
+
+In [71]: data.ix[['Colorado','Utah'],[3,0,1]]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[71]:
+          four  one  two
+Colorado     7    0    5
+Utah        11    8    9
+
+In [72]: data.ix[2]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[72]:
+one       8
+two       9
+three    10
+four     11
+Name: Utah, dtype: int64
+
+In [73]: data.loc[2]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-73-870ecc20c9fe> in <module>
+----> 1 data.loc[2]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1476
+   1477             maybe_callable = com._apply_if_callable(key, self.obj)
+-> 1478             return self._getitem_axis(maybe_callable, axis=axis)
+   1479
+   1480     def _is_scalar_access(self, key):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_axis(self, key,                                                                                                               axis)
+   1909
+   1910         # fall thru to straight lookup
+-> 1911         self._validate_key(key, axis)
+   1912         return self._get_label(key, axis=axis)
+   1913
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_key(self, key,                                                                                                               axis)
+   1786
+   1787             try:
+-> 1788                 key = self._convert_scalar_indexer(key, axis)
+   1789                 if not ax.contains(key):
+   1790                     error()
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _convert_scalar_indexer(                                                                                                              self, key, axis)
+    259         ax = self.obj._get_axis(min(axis, self.ndim - 1))
+    260         # a scalar
+--> 261         return ax._convert_scalar_indexer(key, kind=self.name)
+    262
+    263     def _convert_slice_indexer(self, key, axis):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _convert_scalar_inde                                                                                                              xer(self, key, kind)
+   1677             elif kind in ['loc'] and is_integer(key):
+   1678                 if not self.holds_integer():
+-> 1679                     return self._invalid_indexer('label', key)
+   1680
+   1681         return key
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _invalid_indexer(sel                                                                                                              f, form, key)
+   1861                         "indexers [{key}] of {kind}".format(
+   1862                             form=form, klass=type(self), key=key,
+-> 1863                             kind=type(key)))
+   1864
+   1865     def get_duplicates(self):
+
+TypeError: cannot do label indexing on <class 'pandas.core.indexes.base.Index'> with these indexers [2                                                                                                              ] of <class 'int'>
+
+In [74]: data.iloc[2]
+Out[74]:
+one       8
+two       9
+three    10
+four     11
+Name: Utah, dtype: int64
+
+In [75]: data.iloc[2,[3]]
+Out[75]:
+four    11
+Name: Utah, dtype: int64
+
+In [76]: data.iloc[2,[3,0,1]]
+Out[76]:
+four    11
+one      8
+two      9
+Name: Utah, dtype: int64
+
+In [77]: data.loc[:'Utah','two']
+Out[77]:
+Ohio        0
+Colorado    5
+Utah        9
+Name: two, dtype: int64
+
+In [78]: data
+Out[78]:
+          one  two  three  four
+Ohio        0    0      0     0
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [79]: data.iloc[:2]
+Out[79]:
+          one  two  three  four
+Ohio        0    0      0     0
+Colorado    0    5      6     7
+
+In [80]: data.loc[:'Utah','two']
+Out[80]:
+Ohio        0
+Colorado    5
+Utah        9
+Name: two, dtype: int64
+
+In [81]: data.ix[data.three > 5,:3]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[81]:
+          one  two  three
+Colorado    0    5      6
+Utah        8    9     10
+New York   12   13     14
+
+In [82]: data.iloc[data.three > 5,:3]
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _has_valid_tuple(self, k                                                                                                              ey)
+    221             try:
+--> 222                 self._validate_key(k, i)
+    223             except ValueError:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_key(self, key,                                                                                                               axis)
+   1949                                               "is not available")
+-> 1950                 raise ValueError("iLocation based boolean indexing cannot use "
+   1951                                  "an indexable as a mask")
+
+ValueError: iLocation based boolean indexing cannot use an indexable as a mask
+
+During handling of the above exception, another exception occurred:
+
+ValueError                                Traceback (most recent call last)
+<ipython-input-82-39dc1ea453ee> in <module>
+----> 1 data.iloc[data.three > 5,:3]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+   2011     def _getitem_tuple(self, tup):
+   2012
+-> 2013         self._has_valid_tuple(tup)
+   2014         try:
+   2015             return self._getitem_lowerdim(tup)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _has_valid_tuple(self, k                                                                                                              ey)
+    224                 raise ValueError("Location based indexing can only have "
+    225                                  "[{types}] types"
+--> 226                                  .format(types=self._valid_types))
+    227
+    228     def _is_nested_tuple_indexer(self, tup):
+
+ValueError: Location based indexing can only have [integer, integer slice (START point is INCLUDED, EN                                                                                                              D point is EXCLUDED), listlike of integers, boolean array] types
+
+In [83]: data.three > 5
+Out[83]:
+Ohio        False
+Colorado     True
+Utah         True
+New York     True
+Name: three, dtype: bool
+
+In [84]: data.ix[data.three > 5,:3]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[84]:
+          one  two  three
+Colorado    0    5      6
+Utah        8    9     10
+New York   12   13     14
+
+In [85]: data.iloc[data.three > 5,:3]
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _has_valid_tuple(self, k                                                                                                              ey)
+    221             try:
+--> 222                 self._validate_key(k, i)
+    223             except ValueError:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_key(self, key,                                                                                                               axis)
+   1949                                               "is not available")
+-> 1950                 raise ValueError("iLocation based boolean indexing cannot use "
+   1951                                  "an indexable as a mask")
+
+ValueError: iLocation based boolean indexing cannot use an indexable as a mask
+
+During handling of the above exception, another exception occurred:
+
+ValueError                                Traceback (most recent call last)
+<ipython-input-85-39dc1ea453ee> in <module>
+----> 1 data.iloc[data.three > 5,:3]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+   2011     def _getitem_tuple(self, tup):
+   2012
+-> 2013         self._has_valid_tuple(tup)
+   2014         try:
+   2015             return self._getitem_lowerdim(tup)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _has_valid_tuple(self, k                                                                                                              ey)
+    224                 raise ValueError("Location based indexing can only have "
+    225                                  "[{types}] types"
+--> 226                                  .format(types=self._valid_types))
+    227
+    228     def _is_nested_tuple_indexer(self, tup):
+
+ValueError: Location based indexing can only have [integer, integer slice (START point is INCLUDED, EN                                                                                                              D point is EXCLUDED), listlike of integers, boolean array] types
+
+In [86]: data.ix[data.three > 5,:3]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[86]:
+          one  two  three
+Colorado    0    5      6
+Utah        8    9     10
+New York   12   13     14
+
+In [87]: data.ix[data.three > 5]
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: DeprecationWarning:
+.ix is deprecated. Please use
+.loc for label based indexing or
+.iloc for positional indexing
+
+See the documentation here:
+http://pandas.pydata.org/pandas-docs/stable/indexing.html#ix-indexer-is-deprecated
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[87]:
+          one  two  three  four
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [88]: data.iloc[data.three > 5]
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+<ipython-input-88-7b058b0ab096> in <module>
+----> 1 data.iloc[data.three > 5]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1476
+   1477             maybe_callable = com._apply_if_callable(key, self.obj)
+-> 1478             return self._getitem_axis(maybe_callable, axis=axis)
+   1479
+   1480     def _is_scalar_access(self, key):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_axis(self, key,                                                                                                               axis)
+   2084
+   2085         if com.is_bool_indexer(key):
+-> 2086             self._validate_key(key, axis)
+   2087             return self._getbool_axis(key, axis=axis)
+   2088
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_key(self, key,                                                                                                               axis)
+   1948                                               "indexing on an integer type "
+   1949                                               "is not available")
+-> 1950                 raise ValueError("iLocation based boolean indexing cannot use "
+   1951                                  "an indexable as a mask")
+   1952             return
+
+ValueError: iLocation based boolean indexing cannot use an indexable as a mask
+
+In [89]: data.loc[data.three > 5]
+Out[89]:
+          one  two  three  four
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [90]: data.loc[data.three > 5]
+Out[90]:
+          one  two  three  four
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [91]: data.loc[data.three > 5]0[]
+  File "<ipython-input-91-c1dc4330f7aa>", line 1
+    data.loc[data.three > 5]0[]
+                            ^
+SyntaxError: invalid syntax
+
+
+In [92]: data.loc[data.three > 5][0]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3077             try:
+-> 3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 0
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-92-8a3babb2282e> in <module>
+----> 1 data.loc[data.three > 5][0]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   2686             return self._getitem_multilevel(key)
+   2687         else:
+-> 2688             return self._getitem_column(key)
+   2689
+   2690     def _getitem_column(self, key):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _getitem_column(self, key)
+   2693         # get column
+   2694         if self.columns.is_unique:
+-> 2695             return self._get_item_cache(key)
+   2696
+   2697         # duplicate columns & possible reduce dimensionality
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in _get_item_cache(self, ite                                                                                                              m)
+   2487         res = cache.get(item)
+   2488         if res is None:
+-> 2489             values = self._data.get(item)
+   2490             res = self._box_item_values(item, values)
+   2491             cache[item] = res
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in get(self, item, fastpat                                                                                                              h)
+   4113
+   4114             if not isna(item):
+-> 4115                 loc = self.items.get_loc(item)
+   4116             else:
+   4117                 indexer = np.arange(len(self.items))[isna(self.items)]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, m                                                                                                              ethod, tolerance)
+   3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+-> 3080                 return self._engine.get_loc(self._maybe_cast_indexer(key))
+   3081
+   3082         indexer = self.get_indexer([key], method=method, tolerance=tolerance)
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 0
+
+In [93]: data.loc[data.three > 5]
+Out[93]:
+          one  two  three  four
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [94]: data.loc[data.three > 5].class
+  File "<ipython-input-94-a620a54894cc>", line 1
+    data.loc[data.three > 5].class
+                                 ^
+SyntaxError: invalid syntax
+
+
+In [95]: data.loc[data.three > 5].dtype
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-95-dcc5a67c36be> in <module>
+----> 1 data.loc[data.three > 5].dtype
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in __getattr__(self, name)
+   4374             if self._info_axis._can_hold_identifiers_and_holds_name(name):
+   4375                 return self[name]
+-> 4376             return object.__getattribute__(self, name)
+   4377
+   4378     def __setattr__(self, name, value):
+
+AttributeError: 'DataFrame' object has no attribute 'dtype'
+
+In [96]: data.loc[data.three > 5].shape
+Out[96]: (3, 4)
+
+In [97]: data.loc[data.three > 5][:]
+Out[97]:
+          one  two  three  four
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [98]: data.loc[data.three > 5][:3]
+Out[98]:
+          one  two  three  four
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15
+
+In [99]: data.loc[data.three > 5][:2]
+Out[99]:
+          one  two  three  four
+Colorado    0    5      6     7
+Utah        8    9     10    11
+
+In [100]: data.loc[data.three > 5,0]
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-100-f3cbe96ce387> in <module>
+----> 1 data.loc[data.three > 5,0]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   1470             except (KeyError, IndexError):
+   1471                 pass
+-> 1472             return self._getitem_tuple(key)
+   1473         else:
+   1474             # we by definition only have the 0th axis
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_tuple(self, tup                                                                                                              )
+    868     def _getitem_tuple(self, tup):
+    869         try:
+--> 870             return self._getitem_lowerdim(tup)
+    871         except IndexingError:
+    872             pass
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_lowerdim(self,                                                                                                               tup)
+    996         for i, key in enumerate(tup):
+    997             if is_label_like(key) or isinstance(key, tuple):
+--> 998                 section = self._getitem_axis(key, axis=i)
+    999
+   1000                 # we have yielded a scalar ?
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _getitem_axis(self, key,                                                                                                               axis)
+   1909
+   1910         # fall thru to straight lookup
+-> 1911         self._validate_key(key, axis)
+   1912         return self._get_label(key, axis=axis)
+   1913
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _validate_key(self, key,                                                                                                               axis)
+   1786
+   1787             try:
+-> 1788                 key = self._convert_scalar_indexer(key, axis)
+   1789                 if not ax.contains(key):
+   1790                     error()
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in _convert_scalar_indexer(                                                                                                              self, key, axis)
+    259         ax = self.obj._get_axis(min(axis, self.ndim - 1))
+    260         # a scalar
+--> 261         return ax._convert_scalar_indexer(key, kind=self.name)
+    262
+    263     def _convert_slice_indexer(self, key, axis):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _convert_scalar_inde                                                                                                              xer(self, key, kind)
+   1677             elif kind in ['loc'] and is_integer(key):
+   1678                 if not self.holds_integer():
+-> 1679                     return self._invalid_indexer('label', key)
+   1680
+   1681         return key
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in _invalid_indexer(sel                                                                                                              f, form, key)
+   1861                         "indexers [{key}] of {kind}".format(
+   1862                             form=form, klass=type(self), key=key,
+-> 1863                             kind=type(key)))
+   1864
+   1865     def get_duplicates(self):
+
+TypeError: cannot do label indexing on <class 'pandas.core.indexes.base.Index'> with these indexers [0                                                                                                              ] of <class 'int'>
+
+In [101]: data.loc[data.three > 5,'two']
+Out[101]:
+Colorado     5
+Utah         9
+New York    13
+Name: two, dtype: int64
+
+In [102]: data.get_values
+Out[102]:
+<bound method NDFrame.get_values of           one  two  three  four
+Ohio        0    0      0     0
+Colorado    0    5      6     7
+Utah        8    9     10    11
+New York   12   13     14    15>
+
+In [103]: data.get_values['one']
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-103-981a515d65a7> in <module>
+----> 1 data.get_values['one']
+
+TypeError: 'method' object is not subscriptable
+
+In [104]: data.get_values()
+Out[104]:
+array([[ 0,  0,  0,  0],
+       [ 0,  5,  6,  7],
+       [ 8,  9, 10, 11],
+       [12, 13, 14, 15]])
+
+In [105]: data.get_values['Ohio']
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-105-f17bc948ee04> in <module>
+----> 1 data.get_values['Ohio']
+
+TypeError: 'method' object is not subscriptable
+
+In [106]: data.get_values['Ohio','two']
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-106-66233ea3cf1a> in <module>
+----> 1 data.get_values['Ohio','two']
+
+TypeError: 'method' object is not subscriptable
+
+In [107]: ?DataFrame.get-values
+Object `DataFrame.get-values` not found.
+
+In [108]: ?DataFrame.get_values
+
+In [109]: ?DataFrame.get_value
+Signature: DataFrame.get_value(self, index, col, takeable=False)
+Docstring:
+Quickly retrieve single value at passed column and index
+
+.. deprecated:: 0.21.0
+    Use .at[] or .iat[] accessors instead.
+
+Parameters
+----------
+index : row label
+col : column label
+takeable : interpret the index/col as indexers, default False
+
+Returns
+-------
+value : scalar value
+File:      ~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py
+Type:      function
+
+In [110]: data.get_value['Ohio','two']
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-110-388bb3d74d00> in <module>
+----> 1 data.get_value['Ohio','two']
+
+TypeError: 'method' object is not subscriptable
+
+In [111]: data.get_value['Ohio']
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-111-320e7bee640e> in <module>
+----> 1 data.get_value['Ohio']
+
+TypeError: 'method' object is not subscriptable
+
+In [112]: data.at['two']
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-112-85b04c907e22> in <module>
+----> 1 data.at['two']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   2140
+   2141         key = self._convert_key(key)
+-> 2142         return self.obj._get_value(*key, takeable=self._takeable)
+   2143
+   2144     def __setitem__(self, key, value):
+
+TypeError: _get_value() missing 1 required positional argument: 'col'
+
+In [113]: data.at['ohio','two']
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+<ipython-input-113-797c7f6f9acd> in <module>
+----> 1 data.at['ohio','two']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexing.py in __getitem__(self, key)
+   2140
+   2141         key = self._convert_key(key)
+-> 2142         return self.obj._get_value(*key, takeable=self._takeable)
+   2143
+   2144     def __setitem__(self, key, value):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _get_value(self, index, col                                                                                                              , takeable)
+   2537
+   2538         try:
+-> 2539             return engine.get_value(series._values, index)
+   2540         except (TypeError, ValueError):
+   2541
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_value()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_value()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.PyObjectHashTable.get_item()
+
+KeyError: 'ohio'
+
+In [114]: data.at['Ohio','two']
+Out[114]: 0
+
+In [115]: data.at['Ohio','three']
+Out[115]: 0
+
+In [116]: data.iat[0,0]
+Out[116]: 0
+
+In [117]: data.iat[0,2]
+Out[117]: 0
+
+In [118]: data.iat[0,3]
+Out[118]: 0
+
+In [119]: data.iat[3,3]
+Out[119]: 15
+
+In [120]: data.irow['Ohio']
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-120-e4af8d083c01> in <module>
+----> 1 data.irow['Ohio']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in __getattr__(self, name)
+   4374             if self._info_axis._can_hold_identifiers_and_holds_name(name):
+   4375                 return self[name]
+-> 4376             return object.__getattribute__(self, name)
+   4377
+   4378     def __setattr__(self, name, value):
+
+AttributeError: 'DataFrame' object has no attribute 'irow'
+
+In [121]: ?DataFrame.irow
+Object `DataFrame.irow` not found.
+
+In [122]: ?DataFrame.icol
+Object `DataFrame.icol` not found.
+
+In [123]: ?Series.icol
+Object `Series.icol` not found.
+
+
