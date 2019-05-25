@@ -3016,3 +3016,2271 @@ In [123]: ?Series.icol
 Object `Series.icol` not found.
 
 
+In [1]: import pandas
+
+In [2]: from pandas import Series, DataFrame
+
+In [3]: import numpy as np
+
+In [4]: s1 = Series([7.3, -2.5, 3.4, 1.5], index=['a','c','d','e'])
+
+In [5]: s2 = Series([-2.1, 3.6, -1.5, 4, 3.1], index=['a','c','e','f','g'])
+
+In [6]: s1
+Out[6]:
+a    7.3
+c   -2.5
+d    3.4
+e    1.5
+dtype: float64
+
+In [7]: s2
+Out[7]:
+a   -2.1
+c    3.6
+e   -1.5
+f    4.0
+g    3.1
+dtype: float64
+
+In [8]: s1 + s2
+Out[8]:
+a    5.2
+c    1.1
+d    NaN
+e    0.0
+f    NaN
+g    NaN
+dtype: float64
+
+In [9]: df1 = DataFrame(np.arange(9.0).reshape((3,3)), columns=list('bcd'),index=['Utah','Phio','Texas
+   ...: ','Oregon'])
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in create_block_manager_from_blocks(blocks, axes)
+   4858
+-> 4859         mgr = BlockManager(blocks, axes)
+   4860         mgr._consolidate_inplace()
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in __init__(self, blocks, axes, do_integrity_check)
+   3281         if do_integrity_check:
+-> 3282             self._verify_integrity()
+   3283
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in _verify_integrity(self)
+   3492             if block._verify_integrity and block.shape[1:] != mgr_shape[1:]:
+-> 3493                 construction_error(tot_items, block.shape[1:], self.axes)
+   3494         if len(self.items) != tot_items:
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in construction_error(tot_items, block_shape, axes, e)
+   4842     raise ValueError("Shape of passed values is {0}, indices imply {1}".format(
+-> 4843         passed, implied))
+   4844
+
+ValueError: Shape of passed values is (3, 3), indices imply (3, 4)
+
+During handling of the above exception, another exception occurred:
+
+ValueError                                Traceback (most recent call last)
+<ipython-input-9-bb3c7902ede3> in <module>
+----> 1 df1 = DataFrame(np.arange(9.0).reshape((3,3)), columns=list('bcd'),index=['Utah','Phio','Texas','Oregon'])
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __init__(self, data, index, columns, dtype, copy)
+    377             else:
+    378                 mgr = self._init_ndarray(data, index, columns, dtype=dtype,
+--> 379                                          copy=copy)
+    380         elif isinstance(data, (list, types.GeneratorType)):
+    381             if isinstance(data, types.GeneratorType):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _init_ndarray(self, values, index, columns, dtype, copy)
+    534             values = maybe_infer_to_datetimelike(values)
+    535
+--> 536         return create_block_manager_from_blocks([values], [columns, index])
+    537
+    538     @property
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in create_block_manager_from_blocks(blocks, axes)
+   4864         blocks = [getattr(b, 'values', b) for b in blocks]
+   4865         tot_items = sum(b.shape[0] for b in blocks)
+-> 4866         construction_error(tot_items, blocks[0].shape[1:], axes, e)
+   4867
+   4868
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in construction_error(tot_items, block_shape, axes, e)
+   4841         raise ValueError("Empty data passed with indices specified.")
+   4842     raise ValueError("Shape of passed values is {0}, indices imply {1}".format(
+-> 4843         passed, implied))
+   4844
+   4845
+
+ValueError: Shape of passed values is (3, 3), indices imply (3, 4)
+
+In [10]: df1 = DataFrame(np.arange(9.0).reshape((3,3)), columns=list('bcd'),index=['Ohio','Texas','Col
+
+In [11]: df2 = DataFrame(np.arange(12.).reshape((4,3)),columns=list('bde'),index=['Utah','Ohio','Texas
+    ...: ','Oregon'])
+
+In [12]: df1
+Out[12]:
+            b    c    d
+Ohio      0.0  1.0  2.0
+Texas     3.0  4.0  5.0
+Colorado  6.0  7.0  8.0
+
+In [13]: df2
+Out[13]:
+          b     d     e
+Utah    0.0   1.0   2.0
+Ohio    3.0   4.0   5.0
+Texas   6.0   7.0   8.0
+Oregon  9.0  10.0  11.0
+
+In [14]: df1 +df2
+Out[14]:
+            b   c     d   e
+Colorado  NaN NaN   NaN NaN
+Ohio      3.0 NaN   6.0 NaN
+Oregon    NaN NaN   NaN NaN
+Texas     9.0 NaN  12.0 NaN
+Utah      NaN NaN   NaN NaN
+
+In [15]: # arithmetic methods with fill values
+
+In [16]: df1 = DataFrame(np.arange(12.).reshape((3,4)),columns=list('abcd'))
+
+In [17]: df2 = DataFrame(np.arange(20.).reshape((4,5)),columns=list('abcde'))
+
+In [18]: df1
+Out[18]:
+     a    b     c     d
+0  0.0  1.0   2.0   3.0
+1  4.0  5.0   6.0   7.0
+2  8.0  9.0  10.0  11.0
+
+In [19]: df2
+Out[19]:
+      a     b     c     d     e
+0   0.0   1.0   2.0   3.0   4.0
+1   5.0   6.0   7.0   8.0   9.0
+2  10.0  11.0  12.0  13.0  14.0
+3  15.0  16.0  17.0  18.0  19.0
+
+In [20]: df1 + df2
+Out[20]:
+      a     b     c     d   e
+0   0.0   2.0   4.0   6.0 NaN
+1   9.0  11.0  13.0  15.0 NaN
+2  18.0  20.0  22.0  24.0 NaN
+3   NaN   NaN   NaN   NaN NaN
+
+In [21]: df1.add(df2, fill_value=0)
+Out[21]:
+      a     b     c     d     e
+0   0.0   2.0   4.0   6.0   4.0
+1   9.0  11.0  13.0  15.0   9.0
+2  18.0  20.0  22.0  24.0  14.0
+3  15.0  16.0  17.0  18.0  19.0
+
+In [22]: df1
+Out[22]:
+     a    b     c     d
+0  0.0  1.0   2.0   3.0
+1  4.0  5.0   6.0   7.0
+2  8.0  9.0  10.0  11.0
+
+In [23]: df1.reindex(columns=df2.columns, fill_value=0)
+Out[23]:
+     a    b     c     d  e
+0  0.0  1.0   2.0   3.0  0
+1  4.0  5.0   6.0   7.0  0
+2  8.0  9.0  10.0  11.0  0
+
+In [24]: # Flexible arithmetic methods
+
+In [25]: # add , sub, div, mul
+
+In [26]: # operation between dataframe and series
+
+In [27]: arr = np.arange(12.).reshape((3,4))
+
+In [28]: arr
+Out[28]:
+array([[ 0.,  1.,  2.,  3.],
+       [ 4.,  5.,  6.,  7.],
+       [ 8.,  9., 10., 11.]])
+
+In [29]: arr[0]
+Out[29]: array([0., 1., 2., 3.])
+
+In [30]: arr - arr[0]
+Out[30]:
+array([[0., 0., 0., 0.],
+       [4., 4., 4., 4.],
+       [8., 8., 8., 8.]])
+
+In [31]: # this is refered as boardcasting
+
+In [32]: frame = DataFrame(np.arange(12.).reshape((4,3)), columns=list('bde'),index=['Utah','Ohio','Te
+    ...: xas','Oregon'])
+
+In [33]: frame
+Out[33]:
+          b     d     e
+Utah    0.0   1.0   2.0
+Ohio    3.0   4.0   5.0
+Texas   6.0   7.0   8.0
+Oregon  9.0  10.0  11.0
+
+In [34]: series = frame.iloc[0]
+
+In [35]: series
+Out[35]:
+b    0.0
+d    1.0
+e    2.0
+Name: Utah, dtype: float64
+
+In [36]: frame - series
+Out[36]:
+          b    d    e
+Utah    0.0  0.0  0.0
+Ohio    3.0  3.0  3.0
+Texas   6.0  6.0  6.0
+Oregon  9.0  9.0  9.0
+
+In [37]: series2 = Series(range(3),index=['b','e','f'])
+
+In [38]: series2.name
+
+In [39]: series2.index
+Out[39]: Index(['b', 'e', 'f'], dtype='object')
+
+In [40]: series2.values
+Out[40]: array([0, 1, 2])
+
+In [41]: frame + series2
+Out[41]:
+          b   d     e   f
+Utah    0.0 NaN   3.0 NaN
+Ohio    3.0 NaN   6.0 NaN
+Texas   6.0 NaN   9.0 NaN
+Oregon  9.0 NaN  12.0 NaN
+
+In [42]: # if you want to instead boardcast over the columns, matching on the rows
+
+In [43]: series3 = frame['d']
+
+In [44]: series3
+Out[44]:
+Utah       1.0
+Ohio       4.0
+Texas      7.0
+Oregon    10.0
+Name: d, dtype: float64
+
+In [45]: frame.sub(series3, axis=0)
+Out[45]:
+          b    d    e
+Utah   -1.0  0.0  1.0
+Ohio   -1.0  0.0  1.0
+Texas  -1.0  0.0  1.0
+Oregon -1.0  0.0  1.0
+
+In [46]: #The axis number that you pass is the axis to match on
+
+In [47]: # function application and mapping
+
+In [48]: np.random
+Out[48]: <module 'numpy.random' from '/home/zzp/.conda/envs/torch_04/lib/python3.5/site-packages/numpy/random/__init__.py'>
+
+In [49]: import np.random.randn as  randn
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-49-a8560ca0ab54> in <module>
+----> 1 import np.random.randn as  randn
+
+ImportError: No module named 'np'
+
+In [50]: import numpy.random.randn as  randn
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-50-3a8bcc1f8e72> in <module>
+----> 1 import numpy.random.randn as  randn
+
+ImportError: No module named 'numpy.random.randn'
+
+In [51]: import numpy
+
+In [52]: import numpy.random.randn as  randn
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-52-3a8bcc1f8e72> in <module>
+----> 1 import numpy.random.randn as  randn
+
+ImportError: No module named 'numpy.random.randn'
+
+In [53]: from  numpy.random import   randn
+
+In [54]: frame = DataFrame(randn(4,3),columns=list('bde'),index=['Utah','Ohio','Texas','Oregon'])
+
+In [55]: frame
+Out[55]:
+               b         d         e
+Utah   -1.993697  0.897918  1.880316
+Ohio   -1.104463 -0.861223  2.280687
+Texas  -0.224403 -0.587956  0.242237
+Oregon  0.655208 -0.181334 -1.860926
+
+In [56]: np.abs(frame)
+Out[56]:
+               b         d         e
+Utah    1.993697  0.897918  1.880316
+Ohio    1.104463  0.861223  2.280687
+Texas   0.224403  0.587956  0.242237
+Oregon  0.655208  0.181334  1.860926
+
+In [57]: max()
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-57-f870ea12a3fc> in <module>
+----> 1 max()
+
+TypeError: max expected 1 arguments, got 0
+
+In [58]: max
+Out[58]: <function max>
+
+In [59]: f = lambda x: x.max() - x.min()
+
+In [60]: f(2)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-60-c510dc86724b> in <module>
+----> 1 f(2)
+
+<ipython-input-59-4199c1f4a0f4> in <lambda>(x)
+----> 1 f = lambda x: x.max() - x.min()
+
+AttributeError: 'int' object has no attribute 'max'
+
+In [61]: f([2])
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-61-a78e4415fd30> in <module>
+----> 1 f([2])
+
+<ipython-input-59-4199c1f4a0f4> in <lambda>(x)
+----> 1 f = lambda x: x.max() - x.min()
+
+AttributeError: 'list' object has no attribute 'max'
+
+In [62]: f(series3)
+Out[62]: 9.0
+
+In [63]: frame.apply(f)
+Out[63]:
+b    2.648905
+d    1.759141
+e    4.141613
+dtype: float64
+
+In [64]: frame.apply(f, axis=1)
+Out[64]:
+Utah      3.874013
+Ohio      3.385150
+Texas     0.830193
+Oregon    2.516134
+dtype: float64
+
+In [65]: frame
+Out[65]:
+               b         d         e
+Utah   -1.993697  0.897918  1.880316
+Ohio   -1.104463 -0.861223  2.280687
+Texas  -0.224403 -0.587956  0.242237
+Oregon  0.655208 -0.181334 -1.860926
+
+In [66]: def f(x):
+    ...:     return Series([x.min(),x.max()],index=['min','max'])
+    ...:
+
+In [67]: frame.apply(f)
+Out[67]:
+            b         d         e
+min -1.993697 -0.861223 -1.860926
+max  0.655208  0.897918  2.280687
+
+In [68]: frame.apply(f,axis=1)
+Out[68]:
+             min       max
+Utah   -1.993697  1.880316
+Ohio   -1.104463  2.280687
+Texas  -0.587956  0.242237
+Oregon -1.860926  0.655208
+
+In [69]: format = lambda x: '%.2f'%x
+
+In [70]: frame.applymap(format)
+Out[70]:
+            b      d      e
+Utah    -1.99   0.90   1.88
+Ohio    -1.10  -0.86   2.28
+Texas   -0.22  -0.59   0.24
+Oregon   0.66  -0.18  -1.86
+
+In [71]: frame['e']
+Out[71]:
+Utah      1.880316
+Ohio      2.280687
+Texas     0.242237
+Oregon   -1.860926
+Name: e, dtype: float64
+
+In [72]: frame['e'].map(format)
+Out[72]:
+Utah       1.88
+Ohio       2.28
+Texas      0.24
+Oregon    -1.86
+Name: e, dtype: object
+
+In [73]: # sorting and ranking
+
+In [74]: obj = Series(range(4),index=['d','a','b','c'])
+
+In [75]: obj
+Out[75]:
+d    0
+a    1
+b    2
+c    3
+dtype: int64
+
+In [76]: obj.sort_index()
+Out[76]:
+a    1
+b    2
+c    3
+d    0
+dtype: int64
+
+In [77]: frame = DataFrame(np.arange(8).reshape((2,4)),index=['three','one'],columns=['d','a','b','c']
+    ...: )
+
+In [78]: frame
+Out[78]:
+       d  a  b  c
+three  0  1  2  3
+one    4  5  6  7
+
+In [79]: frame.sort_index(axis=1)
+Out[79]:
+       a  b  c  d
+three  1  2  3  0
+one    5  6  7  4
+
+
+
+
+
+
+
+
+
+
+
+In [80]: # With a DataFrame , you can sort by index on either axis
+
+
+
+
+In [1]: import numpy as np
+
+In [2]: import pandas
+
+In [3]: from pandas import Series, DataFrame
+
+In [4]: obj = Series(range(4), index=['d','a','b','c'])
+
+In [5]: obj.sort_index()
+Out[5]:
+a    1
+b    2
+c    3
+d    0
+dtype: int64
+
+In [6]: # with a DadaFrame , you can sort by index on either axis
+
+In [7]: frame = dataFrame(np.arange(8).reshape((2,4)), index=['three','one'],columns=['d','a','b','c']
+   ...: )
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-7-858518bbe450> in <module>
+----> 1 frame = dataFrame(np.arange(8).reshape((2,4)), index=['three','one'],columns=['d','a','b','c'])
+
+NameError: name 'dataFrame' is not defined
+
+In [8]: frame = DataFrame(np.arange(8).reshape((2,4)), index=['three','one'],columns=['d','a','b','c']
+   ...: )
+
+In [9]: frame
+Out[9]:
+       d  a  b  c
+three  0  1  2  3
+one    4  5  6  7
+
+In [10]: frame.sort_index
+Out[10]:
+<bound method DataFrame.sort_index of        d  a  b  c
+three  0  1  2  3
+one    4  5  6  7>
+
+In [11]: frame.sort_index()
+Out[11]:
+       d  a  b  c
+one    4  5  6  7
+three  0  1  2  3
+
+In [12]: frame.sort_index(axis=1)
+Out[12]:
+       a  b  c  d
+three  1  2  3  0
+one    5  6  7  4
+
+In [13]: frame.sort_index(axis=1,ascending=False)
+Out[13]:
+       d  c  b  a
+three  0  3  2  1
+one    4  7  6  5
+
+In [14]: # to sort a Series by its values, use its order method
+
+In [15]: obj = Series([4, 7, -3, 2])
+
+In [16]: obj
+Out[16]:
+0    4
+1    7
+2   -3
+3    2
+dtype: int64
+
+In [17]: obj.order()
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-17-033d35042ce9> in <module>
+----> 1 obj.order()
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in __getattr__(self, name)
+   4374             if self._info_axis._can_hold_identifiers_and_holds_name(name):
+   4375                 return self[name]
+-> 4376             return object.__getattribute__(self, name)
+   4377
+   4378     def __setattr__(self, name, value):
+
+AttributeError: 'Series' object has no attribute 'order'
+
+In [18]: obj.sort_values()
+Out[18]:
+2   -3
+3    2
+0    4
+1    7
+dtype: int64
+
+In [19]: obj = Series([4, np.nan,7, np.nan,-3, 2])
+
+In [20]: obj
+Out[20]:
+0    4.0
+1    NaN
+2    7.0
+3    NaN
+4   -3.0
+5    2.0
+dtype: float64
+
+In [21]: obj.sort_values()
+Out[21]:
+4   -3.0
+5    2.0
+0    4.0
+2    7.0
+1    NaN
+3    NaN
+dtype: float64
+
+In [22]: frame = DataFrame({'b':[4,7,-3,2],'a':[0,1,0,1]})
+
+In [23]: frame
+Out[23]:
+   a  b
+0  0  4
+1  1  7
+2  0 -3
+3  1  2
+
+In [24]: frame.sort_index(by='b')
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: FutureWarning: by argument to sort_index is deprecated, please use .sort_values(by=...)
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[24]:
+   a  b
+2  0 -3
+3  1  2
+0  0  4
+1  1  7
+
+In [25]: frame.sort_values(by='b')
+Out[25]:
+   a  b
+2  0 -3
+3  1  2
+0  0  4
+1  1  7
+
+In [26]: frame.sort_values(by=['a','b'])
+Out[26]:
+   a  b
+2  0 -3
+0  0  4
+3  1  2
+1  1  7
+
+In [27]: frame.sort_values(by=['b','a'])
+Out[27]:
+   a  b
+2  0 -3
+3  1  2
+0  0  4
+1  1  7
+
+In [28]: # Ranking is closely related to sorting
+
+In [29]: import numpy
+
+In [30]: numpy.argsort
+Out[30]: <function numpy.core.fromnumeric.argsort(a, axis=-1, kind='quicksort', order=None)>
+
+In [31]: obj = Series([7, -5, 7, 4, 2, 0, 4])
+
+In [32]: obj.rank()
+Out[32]:
+0    6.5
+1    1.0
+2    6.5
+3    4.5
+4    3.0
+5    2.0
+6    4.5
+dtype: float64
+
+In [33]: ?Series.rank()
+Object `Series.rank()` not found.
+
+In [34]: ?Series.rank
+Signature:
+Series.rank(
+    ['self', 'axis=0', "method='average'", 'numeric_only=None', "na_option='keep'", 'ascending=True', 'pct=False'],
+)
+Docstring:
+Compute numerical data ranks (1 through n) along axis. Equal values are
+assigned a rank that is the average of the ranks of those values
+
+Parameters
+----------
+axis : {0 or 'index', 1 or 'columns'}, default 0
+    index to direct ranking
+method : {'average', 'min', 'max', 'first', 'dense'}
+    * average: average rank of group
+    * min: lowest rank in group
+    * max: highest rank in group
+    * first: ranks assigned in order they appear in the array
+    * dense: like 'min', but rank always increases by 1 between groups
+numeric_only : boolean, default None
+    Include only float, int, boolean data. Valid only for DataFrame or
+    Panel objects
+na_option : {'keep', 'top', 'bottom'}
+    * keep: leave NA values where they are
+    * top: smallest rank if ascending
+    * bottom: smallest rank if descending
+ascending : boolean, default True
+    False for ranks by high (1) to low (N)
+pct : boolean, default False
+    Computes percentage rank of data
+
+Returns
+-------
+ranks : same type as caller
+File:      ~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py
+Type:      function
+
+In [35]: obj.rank()
+Out[35]:
+0    6.5
+1    1.0
+2    6.5
+3    4.5
+4    3.0
+5    2.0
+6    4.5
+dtype: float64
+
+In [36]: obj
+Out[36]:
+0    7
+1   -5
+2    7
+3    4
+4    2
+5    0
+6    4
+dtype: int64
+
+In [37]: # ranks can be assigned according to the order they're observed in the data
+
+In [38]: obj.rank(method='first')
+Out[38]:
+0    6.0
+1    1.0
+2    7.0
+3    4.0
+4    3.0
+5    2.0
+6    5.0
+dtype: float64
+
+In [39]: obj.rank(ascending=False,method='max')
+Out[39]:
+0    2.0
+1    7.0
+2    2.0
+3    4.0
+4    5.0
+5    6.0
+6    4.0
+dtype: float64
+
+In [40]: frame = DataFrame({'b':[4.3,7,-3,2],'a':[0,1,0,1],'c':[-2,5,8,-2.5]})
+
+In [41]: frame
+Out[41]:
+   a    b    c
+0  0  4.3 -2.0
+1  1  7.0  5.0
+2  0 -3.0  8.0
+3  1  2.0 -2.5
+
+In [42]: frame.rank(axis=1)
+Out[42]:
+     a    b    c
+0  2.0  3.0  1.0
+1  1.0  3.0  2.0
+2  2.0  1.0  3.0
+3  2.0  3.0  1.0
+
+In [43]: # method can be average,min,  max, first
+
+In [44]: # axis indexes with duplicate values
+
+In [45]: obj = Series(range(5),index=['a','a','b','b','c'])
+
+In [46]: obj
+Out[46]:
+a    0
+a    1
+b    2
+b    3
+c    4
+dtype: int64
+
+In [47]: # index's is_unique property can tell you whether its values are unique or not
+
+In [48]: obj
+Out[48]:
+a    0
+a    1
+b    2
+b    3
+c    4
+dtype: int64
+
+In [49]: obj.index.is_unique()
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-49-c91b1152f4b2> in <module>
+----> 1 obj.index.is_unique()
+
+TypeError: 'bool' object is not callable
+
+In [50]: obj.index.is_unique
+Out[50]: False
+
+In [51]: obj
+Out[51]:
+a    0
+a    1
+b    2
+b    3
+c    4
+dtype: int64
+
+In [52]: obj['a']
+Out[52]:
+a    0
+a    1
+dtype: int64
+
+In [53]: obj['c']
+Out[53]: 4
+
+In [54]: from np.random import randn
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-54-08190da8b4b6> in <module>
+----> 1 from np.random import randn
+
+ImportError: No module named 'np'
+
+In [55]: from numpy.random import randn
+
+In [56]: df = DataFrame(randn(4,3),index=['a','a','b','b'])
+
+In [57]: df
+Out[57]:
+          0         1         2
+a -0.236487 -0.487004  1.066033
+a  0.505472 -0.780539 -0.134237
+b  0.897614  0.347000  0.597286
+b -1.283021 -1.409396 -0.658270
+
+In [58]: df.loc['b']
+Out[58]:
+          0         1         2
+b  0.897614  0.347000  0.597286
+b -1.283021 -1.409396 -0.658270
+
+In [59]: # summarizing and computing descriptive statistics
+
+In [60]: df = DataFrame([[1.4,np.nan],[7.1,-4.5],[np.nan,np.nan],[0.75,-1.3]],index=['a','b','c','d'],
+    ...: columns=['one','two'])
+
+In [61]: df
+Out[61]:
+    one  two
+a  1.40  NaN
+b  7.10 -4.5
+c   NaN  NaN
+d  0.75 -1.3
+
+In [62]: df.sum()
+Out[62]:
+one    9.25
+two   -5.80
+dtype: float64
+
+In [63]: df.sum(axis=0)
+Out[63]:
+one    9.25
+two   -5.80
+dtype: float64
+
+In [64]: df.sum(axis=1)
+Out[64]:
+a    1.40
+b    2.60
+c    0.00
+d   -0.55
+dtype: float64
+
+In [65]: df.sum(axis=1,skipna=False)
+Out[65]:
+a     NaN
+b    2.60
+c     NaN
+d   -0.55
+dtype: float64
+
+In [66]: df.mean(axis=1,skipna=False)
+Out[66]:
+a      NaN
+b    1.300
+c      NaN
+d   -0.275
+dtype: float64
+
+In [67]: # axis, skipna, level: reduce grouped by level if the axis is hierarchically-indexed
+
+In [68]: # idxmin.idxmax
+
+In [69]: df.idxmax()
+Out[69]:
+one    b
+two    d
+dtype: object
+
+In [70]: df
+Out[70]:
+    one  two
+a  1.40  NaN
+b  7.10 -4.5
+c   NaN  NaN
+d  0.75 -1.3
+
+In [71]: df.idxmax(axis=1)
+Out[71]:
+a    one
+b    one
+c    NaN
+d    one
+dtype: object
+
+In [72]: df.cumsum()
+Out[72]:
+    one  two
+a  1.40  NaN
+b  8.50 -4.5
+c   NaN  NaN
+d  9.25 -5.8
+
+In [73]: df.cumsum(axis=1)
+Out[73]:
+    one   two
+a  1.40   NaN
+b  7.10  2.60
+c   NaN   NaN
+d  0.75 -0.55
+
+In [74]: # method : describe ,statistic information
+
+In [75]: df.describe()
+Out[75]:
+            one       two
+count  3.000000  2.000000
+mean   3.083333 -2.900000
+std    3.493685  2.262742
+min    0.750000 -4.500000
+25%    1.075000 -3.700000
+50%    1.400000 -2.900000
+75%    4.250000 -2.100000
+max    7.100000 -1.300000
+
+In [76]: obj = Series(['a','a','b','c']*4)
+
+In [77]: obj
+Out[77]:
+0     a
+1     a
+2     b
+3     c
+4     a
+5     a
+6     b
+7     c
+8     a
+9     a
+10    b
+11    c
+12    a
+13    a
+14    b
+15    c
+dtype: object
+
+In [78]: obj.describe()
+Out[78]:
+count     16
+unique     3
+top        a
+freq       8
+dtype: object
+
+In [79]: ?Series.describe
+
+In [80]: # pct_change
+
+In [81]: # correlation and covariance
+
+In [82]: import pandas.io.data as web
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-82-a037bd014590> in <module>
+----> 1 import pandas.io.data as web
+
+ImportError: No module named 'pandas.io.data'
+
+In [83]: pandas.io
+Out[83]: <module 'pandas.io' from '/home/zzp/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/io/__init__.py'>
+
+In [84]: pandas.io.data
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-84-19a4c3c4a725> in <module>
+----> 1 pandas.io.data
+
+AttributeError: module 'pandas.io' has no attribute 'data'
+
+In [85]: pandas.io
+Out[85]: <module 'pandas.io' from '/home/zzp/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/io/__init__.py'>
+
+In [86]: pandas-datareader
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-86-c5068ba6476a> in <module>
+----> 1 pandas-datareader
+
+NameError: name 'datareader' is not defined
+
+In [1]: import numpy as np
+
+In [2]: import pandas
+
+In [3]: from pandas import Series, DataFrame
+
+In [4]:
+
+In [4]: pandas.datareader
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-4-f87c17dbc056> in <module>
+----> 1 pandas.datareader
+
+AttributeError: module 'pandas' has no attribute 'datareader'
+
+In [5]: pandas_datareader
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-5-605b641acf04> in <module>
+----> 1 pandas_datareader
+
+NameError: name 'pandas_datareader' is not defined
+
+In [6]: import pandas_reader
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-6-52f45af255a5> in <module>
+----> 1 import pandas_reader
+
+ImportError: No module named 'pandas_reader'
+
+In [7]: import pandas_datareader
+
+In [8]: from pandas_datareader import data as web
+
+In [9]: all_data = {}
+
+In [10]: all_data.type
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-10-68b3431f29fc> in <module>
+----> 1 all_data.type
+
+AttributeError: 'dict' object has no attribute 'type'
+
+In [11]: all_data.dtype
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-11-6b22f77da57c> in <module>
+----> 1 all_data.dtype
+
+AttributeError: 'dict' object has no attribute 'dtype'
+
+In [12]: all_data.class
+  File "<ipython-input-12-3feae15f78e8>", line 1
+    all_data.class
+                 ^
+SyntaxError: invalid syntax
+
+
+In [13]: all_data.__class__
+Out[13]: dict
+
+In [14]: for ticker in ['AAPL','IBM','MSFT','GOOG']:
+    ...:     all_data[ticker] = web.get_data_yahoo(ticker,'1/1/2000','1/1/2010')
+    ...:
+
+
+
+
+
+
+
+q
+
+
+
+^Z
+[1]+  Stopped                 ipython
+(torch_04) zzp@uesr-PR4768GW-xn2:~/pytorch/Machine-Learning-Math-/python_learning$ ps
+  PID TTY          TIME CMD
+36530 pts/11   00:00:00 bash
+39209 pts/11   00:00:11 ipython
+51273 pts/11   00:00:00 ps
+(torch_04) zzp@uesr-PR4768GW-xn2:~/pytorch/Machine-Learning-Math-/python_learning$ kill -9 39209
+(torch_04) zzp@uesr-PR4768GW-xn2:~/pytorch/Machine-Learning-Math-/python_learning$ ps
+  PID TTY          TIME CMD
+36530 pts/11   00:00:00 bash
+51577 pts/11   00:00:00 ps
+[1]+  Killed                  ipython
+(torch_04) zzp@uesr-PR4768GW-xn2:~/pytorch/Machine-Learning-Math-/python_learning$ ipython
+Python 3.5.4 |Continuum Analytics, Inc.| (default, Aug 14 2017, 13:26:58)
+Type 'copyright', 'credits' or 'license' for more information
+IPython 7.2.0 -- An enhanced Interactive Python. Type '?' for help.
+
+In [1]: import numpy as np
+
+In [2]: import pandas
+
+In [3]: from pandas import Series, DataFrame
+
+In [4]: import numpy
+
+In [5]: # unique values, value counts, and membership
+
+In [6]: obj = Series(['c','a','d','a','a','b','b','c','c'])
+
+In [7]: uniques = obj.unique()
+
+In [8]: uniques
+Out[8]: array(['c', 'a', 'd', 'b'], dtype=object)
+
+In [9]: uniques.sort()
+
+In [10]: uniques
+Out[10]: array(['a', 'b', 'c', 'd'], dtype=object)
+
+In [11]: obj.value_counts()
+Out[11]:
+c    3
+a    3
+b    2
+d    1
+dtype: int64
+
+In [12]: import pandas ad pd
+  File "<ipython-input-12-c76af52d8bfc>", line 1
+    import pandas ad pd
+                   ^
+SyntaxError: invalid syntax
+
+
+In [13]: import pandas as pd
+
+In [14]: pd.value_counts(obj.values,sort=False)
+Out[14]:
+b    2
+a    3
+d    1
+c    3
+dtype: int64
+
+In [15]: mask = obj.isin(['b','c'])
+
+In [16]: mask
+Out[16]:
+0     True
+1    False
+2    False
+3    False
+4    False
+5     True
+6     True
+7     True
+8     True
+dtype: bool
+
+In [17]: obj
+Out[17]:
+0    c
+1    a
+2    d
+3    a
+4    a
+5    b
+6    b
+7    c
+8    c
+dtype: object
+
+In [18]: obj[mask]
+Out[18]:
+0    c
+5    b
+6    b
+7    c
+8    c
+dtype: object
+
+In [19]: # method: isin, unique, value_counts
+
+In [20]: data = DataFrame({'Qu1':[1,3,4,3,4],})
+
+In [21]: data = DataFrame({'Qu1':[1,3,4,3,4],'Qu2':[2,3,1,2,3],'Qu3':[1,5,2,4,4]})
+
+In [22]: data
+Out[22]:
+   Qu1  Qu2  Qu3
+0    1    2    1
+1    3    3    5
+2    4    1    2
+3    3    2    4
+4    4    3    4
+
+In [23]: result = data.apply(pd.value_counts)
+
+In [24]: result
+Out[24]:
+   Qu1  Qu2  Qu3
+1  1.0  1.0  1.0
+2  NaN  2.0  1.0
+3  2.0  2.0  NaN
+4  2.0  NaN  2.0
+5  NaN  NaN  1.0
+
+In [25]: result = data.apply(pd.value_counts).fillna(0)
+
+In [26]: result
+Out[26]:
+   Qu1  Qu2  Qu3
+1  1.0  1.0  1.0
+2  0.0  2.0  1.0
+3  2.0  2.0  0.0
+4  2.0  0.0  2.0
+5  0.0  0.0  1.0
+
+In [27]: result = data.apply(pd.value_counts(axis=1)).fillna(0)
+---------------------------------------------------------------------------
+TypeError                                 Traceback (most recent call last)
+<ipython-input-27-99afdf672d5e> in <module>
+----> 1 result = data.apply(pd.value_counts(axis=1)).fillna(0)
+
+TypeError: value_counts() got an unexpected keyword argument 'axis'
+
+In [28]: result = data.apply(pd.value_counts,axis=1).fillna(0)
+
+In [29]: result
+Out[29]:
+     1    2    3    4    5
+0  2.0  1.0  0.0  0.0  0.0
+1  0.0  0.0  2.0  0.0  1.0
+2  1.0  1.0  0.0  1.0  0.0
+3  0.0  1.0  1.0  1.0  0.0
+4  0.0  0.0  1.0  2.0  0.0
+
+In [30]: # handling missing data
+
+In [31]: string_data = Series(['aardvark','artichoke',np.nan,'avocado'])
+
+In [32]: string_data
+Out[32]:
+0     aardvark
+1    artichoke
+2          NaN
+3      avocado
+dtype: object
+
+In [33]: string_data.isnull()
+Out[33]:
+0    False
+1    False
+2     True
+3    False
+dtype: bool
+
+In [34]: string_data[0]=None
+
+In [35]: string_data
+Out[35]:
+0         None
+1    artichoke
+2          NaN
+3      avocado
+dtype: object
+
+In [36]: string_data.isnull()
+Out[36]:
+0     True
+1    False
+2     True
+3    False
+dtype: bool
+
+In [37]: # method: dropna, fillna, isnull, notnull
+
+In [38]: string_data.dropna()
+Out[38]:
+1    artichoke
+3      avocado
+dtype: object
+
+In [39]: string_data
+Out[39]:
+0         None
+1    artichoke
+2          NaN
+3      avocado
+dtype: object
+
+In [40]: # filtering out missing data
+
+In [41]: from numpy import nan as NA
+
+In [42]: data = Series([1, NA, 3.5, NA, 7])
+
+In [43]: data
+Out[43]:
+0    1.0
+1    NaN
+2    3.5
+3    NaN
+4    7.0
+dtype: float64
+
+In [44]: data.dropna()
+Out[44]:
+0    1.0
+2    3.5
+4    7.0
+dtype: float64
+
+In [45]: data[data.notnull()]
+Out[45]:
+0    1.0
+2    3.5
+4    7.0
+dtype: float64
+
+In [46]: # in DataFrame, dropna by default drops any row containing a missing value
+
+In [47]: data = DataFrame([[1.,6.5,3.],[1.,NA,NA],[NA,NA,NA],[NA,6.5,3.]])
+
+In [48]: data
+Out[48]:
+     0    1    2
+0  1.0  6.5  3.0
+1  1.0  NaN  NaN
+2  NaN  NaN  NaN
+3  NaN  6.5  3.0
+
+In [49]: cleaned = data.dropna()
+
+In [50]: cleaned
+Out[50]:
+     0    1    2
+0  1.0  6.5  3.0
+
+In [51]: data
+Out[51]:
+     0    1    2
+0  1.0  6.5  3.0
+1  1.0  NaN  NaN
+2  NaN  NaN  NaN
+3  NaN  6.5  3.0
+
+In [52]: data.dropna(how='all')
+Out[52]:
+     0    1    2
+0  1.0  6.5  3.0
+1  1.0  NaN  NaN
+3  NaN  6.5  3.0
+
+In [53]: data.dropna(how='all',axis=1)
+Out[53]:
+     0    1    2
+0  1.0  6.5  3.0
+1  1.0  NaN  NaN
+2  NaN  NaN  NaN
+3  NaN  6.5  3.0
+
+In [54]: data.dropna(how='any',axis=1)
+Out[54]:
+Empty DataFrame
+Columns: []
+Index: [0, 1, 2, 3]
+
+In [55]: data
+Out[55]:
+     0    1    2
+0  1.0  6.5  3.0
+1  1.0  NaN  NaN
+2  NaN  NaN  NaN
+3  NaN  6.5  3.0
+
+In [56]: data[4]
+---------------------------------------------------------------------------
+KeyError                                  Traceback (most recent call last)
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, method, tolerance)
+   3077             try:
+-> 3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.Int64HashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.Int64HashTable.get_item()
+
+KeyError: 4
+
+During handling of the above exception, another exception occurred:
+
+KeyError                                  Traceback (most recent call last)
+<ipython-input-56-38679d5bb23a> in <module>
+----> 1 data[4]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in __getitem__(self, key)
+   2686             return self._getitem_multilevel(key)
+   2687         else:
+-> 2688             return self._getitem_column(key)
+   2689
+   2690     def _getitem_column(self, key):
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/frame.py in _getitem_column(self, key)
+   2693         # get column
+   2694         if self.columns.is_unique:
+-> 2695             return self._get_item_cache(key)
+   2696
+   2697         # duplicate columns & possible reduce dimensionality
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in _get_item_cache(self, item)
+   2487         res = cache.get(item)
+   2488         if res is None:
+-> 2489             values = self._data.get(item)
+   2490             res = self._box_item_values(item, values)
+   2491             cache[item] = res
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/internals.py in get(self, item, fastpath)
+   4113
+   4114             if not isna(item):
+-> 4115                 loc = self.items.get_loc(item)
+   4116             else:
+   4117                 indexer = np.arange(len(self.items))[isna(self.items)]
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/base.py in get_loc(self, key, method, tolerance)
+   3078                 return self._engine.get_loc(key)
+   3079             except KeyError:
+-> 3080                 return self._engine.get_loc(self._maybe_cast_indexer(key))
+   3081
+   3082         indexer = self.get_indexer([key], method=method, tolerance=tolerance)
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/index.pyx in pandas._libs.index.IndexEngine.get_loc()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.Int64HashTable.get_item()
+
+pandas/_libs/hashtable_class_helper.pxi in pandas._libs.hashtable.Int64HashTable.get_item()
+
+KeyError: 4
+
+In [57]: data[4] = NA
+
+In [58]: data
+Out[58]:
+     0    1    2   4
+0  1.0  6.5  3.0 NaN
+1  1.0  NaN  NaN NaN
+2  NaN  NaN  NaN NaN
+3  NaN  6.5  3.0 NaN
+
+In [59]: data.dropna(axis=1,how='all')
+Out[59]:
+     0    1    2
+0  1.0  6.5  3.0
+1  1.0  NaN  NaN
+2  NaN  NaN  NaN
+3  NaN  6.5  3.0
+
+In [60]: from numpy.random import randn
+
+In [61]: df = DataFrame(randn(7,3))
+
+In [62]: df
+Out[62]:
+          0         1         2
+0 -0.033057  0.592211 -0.976551
+1  1.316717 -1.253851  1.425043
+2  1.122187  0.920886 -0.838337
+3  0.991941  1.317843 -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [63]: df.iloc[:4,1]
+Out[63]:
+0    0.592211
+1   -1.253851
+2    0.920886
+3    1.317843
+Name: 1, dtype: float64
+
+In [64]: df.iloc[:2,2]
+Out[64]:
+0   -0.976551
+1    1.425043
+Name: 2, dtype: float64
+
+In [65]: df.iloc[:4,1]=NA
+
+In [66]: df.iloc[:2,2]=NA
+
+In [67]: df
+Out[67]:
+          0         1         2
+0 -0.033057       NaN       NaN
+1  1.316717       NaN       NaN
+2  1.122187       NaN -0.838337
+3  0.991941       NaN -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [68]: df.dropna(thresh=3)
+Out[68]:
+          0         1         2
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [69]: df.dropna(thresh=2)
+Out[69]:
+          0         1         2
+2  1.122187       NaN -0.838337
+3  0.991941       NaN -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [70]: df.dropna(thresh=1)
+Out[70]:
+          0         1         2
+0 -0.033057       NaN       NaN
+1  1.316717       NaN       NaN
+2  1.122187       NaN -0.838337
+3  0.991941       NaN -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [71]: df.dropna(thresh=0)
+Out[71]:
+          0         1         2
+0 -0.033057       NaN       NaN
+1  1.316717       NaN       NaN
+2  1.122187       NaN -0.838337
+3  0.991941       NaN -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [72]: # filling in missing data
+
+In [73]: df.fillna(0)
+Out[73]:
+          0         1         2
+0 -0.033057  0.000000  0.000000
+1  1.316717  0.000000  0.000000
+2  1.122187  0.000000 -0.838337
+3  0.991941  0.000000 -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [74]: df
+Out[74]:
+          0         1         2
+0 -0.033057       NaN       NaN
+1  1.316717       NaN       NaN
+2  1.122187       NaN -0.838337
+3  0.991941       NaN -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [75]: # Calling fillna with a dict you can use a different fill value for each column:
+
+In [76]: df.fillna({1:0.5,3:-1})
+Out[76]:
+          0         1         2
+0 -0.033057  0.500000       NaN
+1  1.316717  0.500000       NaN
+2  1.122187  0.500000 -0.838337
+3  0.991941  0.500000 -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [77]: df.fillna({1:0.5,2:-1})
+Out[77]:
+          0         1         2
+0 -0.033057  0.500000 -1.000000
+1  1.316717  0.500000 -1.000000
+2  1.122187  0.500000 -0.838337
+3  0.991941  0.500000 -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [78]: _ = df.fillna(0, inplace=True)
+
+In [79]: df
+Out[79]:
+          0         1         2
+0 -0.033057  0.000000  0.000000
+1  1.316717  0.000000  0.000000
+2  1.122187  0.000000 -0.838337
+3  0.991941  0.000000 -0.019115
+4  1.472204 -1.073680  0.143914
+5 -0.433482 -1.177891  1.939333
+6 -1.498893  1.264796 -0.221983
+
+In [80]: _
+
+In [81]: _
+
+In [82]: df = DataFrame(randn(6,3))
+
+In [83]: df
+Out[83]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082 -0.268322  1.844349
+3  0.671420 -1.486690 -0.972802
+4  0.504501  0.059081  0.253820
+5 -1.379296 -1.007234 -0.249266
+
+In [84]: df.iloc[2:,1]
+Out[84]:
+2   -0.268322
+3   -1.486690
+4    0.059081
+5   -1.007234
+Name: 1, dtype: float64
+
+In [85]: df.iloc[:2,1]
+Out[85]:
+0    0.359564
+1    0.038292
+Name: 1, dtype: float64
+
+In [86]: df.iloc[2:,1] = NA
+
+In [87]: df
+Out[87]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082       NaN  1.844349
+3  0.671420       NaN -0.972802
+4  0.504501       NaN  0.253820
+5 -1.379296       NaN -0.249266
+
+In [88]: df.iloc[4:,2]=NA
+
+In [89]: df
+Out[89]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082       NaN  1.844349
+3  0.671420       NaN -0.972802
+4  0.504501       NaN       NaN
+5 -1.379296       NaN       NaN
+
+In [90]: df.fillna(method='ffill')
+Out[90]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082  0.038292  1.844349
+3  0.671420  0.038292 -0.972802
+4  0.504501  0.038292 -0.972802
+5 -1.379296  0.038292 -0.972802
+
+In [91]: df.fillna(method='ffill',axis=1)
+Out[91]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082  0.612082  1.844349
+3  0.671420  0.671420 -0.972802
+4  0.504501  0.504501  0.504501
+5 -1.379296 -1.379296 -1.379296
+
+In [92]: df.fillna(method='ffill',limit=2)
+Out[92]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082  0.038292  1.844349
+3  0.671420  0.038292 -0.972802
+4  0.504501       NaN -0.972802
+5 -1.379296       NaN -0.972802
+
+In [93]: df
+Out[93]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082       NaN  1.844349
+3  0.671420       NaN -0.972802
+4  0.504501       NaN       NaN
+5 -1.379296       NaN       NaN
+
+In [94]: DataFrame.fillna
+Out[94]: <function pandas.core.frame.DataFrame.fillna(self, value=None, method=None, axis=None, inplace=False, limit=None, downcast=None, **kwargs)>
+
+In [95]: ?DataFrame.fillna
+
+In [96]: df
+Out[96]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082       NaN  1.844349
+3  0.671420       NaN -0.972802
+4  0.504501       NaN       NaN
+5 -1.379296       NaN       NaN
+
+In [97]: df.fillna(method='ffill',limit=2)
+Out[97]:
+          0         1         2
+0  1.155492  0.359564 -0.623399
+1  1.080388  0.038292 -1.073803
+2  0.612082  0.038292  1.844349
+3  0.671420  0.038292 -0.972802
+4  0.504501       NaN -0.972802
+5 -1.379296       NaN -0.972802
+
+In [98]: data = Series([1.,NA,3.5,NA,7])
+
+In [99]: data.fillna(data.mean())
+Out[99]:
+0    1.000000
+1    3.833333
+2    3.500000
+3    3.833333
+4    7.000000
+dtype: float64
+
+In [100]: # method: value, method, axis, inplace, limit
+
+In [101]: # Hierarchical indexing
+
+In [102]: data = Series(randn(10),index=[['a','a','a','b','b','b','c','c','d','d'],[1,2,3,1,2,3,1,2,2,
+     ...: 3]])
+
+In [103]: data
+Out[103]:
+a  1    0.840254
+   2   -1.330476
+   3   -0.746255
+b  1   -0.703029
+   2   -0.860346
+   3   -3.403168
+c  1    1.641152
+   2   -2.315207
+d  2   -1.458358
+   3    0.227271
+dtype: float64
+
+In [104]: data_1 = Series(randn(10),index=[['a','b','a','b','b','b','c','c','d','d'],[1,2,3,1,2,3,1,2,
+     ...: 2,3]])
+
+In [105]: data_1
+Out[105]:
+a  1    0.819729
+b  2    1.616450
+a  3   -1.115675
+b  1    0.226077
+   2   -1.947859
+   3    1.528370
+c  1   -1.266269
+   2   -0.203215
+d  2   -0.854684
+   3   -0.123203
+dtype: float64
+
+In [106]: data.index
+Out[106]:
+MultiIndex(levels=[['a', 'b', 'c', 'd'], [1, 2, 3]],
+           labels=[[0, 0, 0, 1, 1, 1, 2, 2, 3, 3], [0, 1, 2, 0, 1, 2, 0, 1, 1, 2]])
+
+In [107]: data_1.index
+Out[107]:
+MultiIndex(levels=[['a', 'b', 'c', 'd'], [1, 2, 3]],
+           labels=[[0, 1, 0, 1, 1, 1, 2, 2, 3, 3], [0, 1, 2, 0, 1, 2, 0, 1, 1, 2]])
+
+In [108]: data['b']
+Out[108]:
+1   -0.703029
+2   -0.860346
+3   -3.403168
+dtype: float64
+
+In [109]: data_1['b']
+Out[109]:
+2    1.616450
+1    0.226077
+2   -1.947859
+3    1.528370
+dtype: float64
+
+In [110]: data['b':'c']
+Out[110]:
+b  1   -0.703029
+   2   -0.860346
+   3   -3.403168
+c  1    1.641152
+   2   -2.315207
+dtype: float64
+
+In [111]: data.loc[['b','d']]
+Out[111]:
+b  1   -0.703029
+   2   -0.860346
+   3   -3.403168
+d  2   -1.458358
+   3    0.227271
+dtype: float64
+
+In [112]: data[:,2]
+Out[112]:
+a   -1.330476
+b   -0.860346
+c   -2.315207
+d   -1.458358
+dtype: float64
+
+In [113]: data
+Out[113]:
+a  1    0.840254
+   2   -1.330476
+   3   -0.746255
+b  1   -0.703029
+   2   -0.860346
+   3   -3.403168
+c  1    1.641152
+   2   -2.315207
+d  2   -1.458358
+   3    0.227271
+dtype: float64
+
+In [114]: data.unstack()
+Out[114]:
+          1         2         3
+a  0.840254 -1.330476 -0.746255
+b -0.703029 -0.860346 -3.403168
+c  1.641152 -2.315207       NaN
+d       NaN -1.458358  0.227271
+
+In [115]: data
+Out[115]:
+a  1    0.840254
+   2   -1.330476
+   3   -0.746255
+b  1   -0.703029
+   2   -0.860346
+   3   -3.403168
+c  1    1.641152
+   2   -2.315207
+d  2   -1.458358
+   3    0.227271
+dtype: float64
+
+In [116]: data.unstack().stack()
+Out[116]:
+a  1    0.840254
+   2   -1.330476
+   3   -0.746255
+b  1   -0.703029
+   2   -0.860346
+   3   -3.403168
+c  1    1.641152
+   2   -2.315207
+d  2   -1.458358
+   3    0.227271
+dtype: float64
+
+In [117]: frame = DataFrame(np.arange(12).reshape((4,3)),index=[['a','a','b','b'],[1,2,1,2]],columns=[
+     ...: ['Ohio','Ohio','Colorado'],['Green','Red','Green']])
+
+In [118]: frame
+Out[118]:
+     Ohio     Colorado
+    Green Red    Green
+a 1     0   1        2
+  2     3   4        5
+b 1     6   7        8
+  2     9  10       11
+
+In [119]: frame.index.name
+
+In [120]: frame.index
+Out[120]:
+MultiIndex(levels=[['a', 'b'], [1, 2]],
+           labels=[[0, 0, 1, 1], [0, 1, 0, 1]])
+
+In [121]: frame.columns
+Out[121]:
+MultiIndex(levels=[['Colorado', 'Ohio'], ['Green', 'Red']],
+           labels=[[1, 1, 0], [0, 1, 0]])
+
+In [122]: frame
+Out[122]:
+     Ohio     Colorado
+    Green Red    Green
+a 1     0   1        2
+  2     3   4        5
+b 1     6   7        8
+  2     9  10       11
+
+In [123]: frame.index.names = ['key1','key2']
+
+In [124]: frame.columns.names=['state','color']
+
+In [125]: frame.index.names
+Out[125]: FrozenList(['key1', 'key2'])
+
+In [126]: frame.columns.names
+Out[126]: FrozenList(['state', 'color'])
+
+In [127]: frame
+Out[127]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+     2        3   4        5
+b    1        6   7        8
+     2        9  10       11
+
+In [128]: frame['Ohio']
+Out[128]:
+color      Green  Red
+key1 key2
+a    1         0    1
+     2         3    4
+b    1         6    7
+     2         9   10
+
+In [129]: MultiIndex
+---------------------------------------------------------------------------
+NameError                                 Traceback (most recent call last)
+<ipython-input-129-463566e7c0f3> in <module>
+----> 1 MultiIndex
+
+NameError: name 'MultiIndex' is not defined
+
+In [130]: import MultiIndex
+---------------------------------------------------------------------------
+ImportError                               Traceback (most recent call last)
+<ipython-input-130-83f64a375486> in <module>
+----> 1 import MultiIndex
+
+ImportError: No module named 'MultiIndex'
+
+In [131]: pandas.MultiIndex
+Out[131]: pandas.core.indexes.multi.MultiIndex
+
+In [132]: from pandas import MultiIndex
+
+In [133]: MultiIndex.from_arrays([['Ohio','Ohio','Colorado'],['Green','Red','Green']],names=['state','
+     ...: color'])
+Out[133]:
+MultiIndex(levels=[['Colorado', 'Ohio'], ['Green', 'Red']],
+           labels=[[1, 1, 0], [0, 1, 0]],
+           names=['state', 'color'])
+
+In [134]: L = MultiIndex.from_arrays([['Ohio','Ohio','Colorado'],['Green','Red','Green']],names=['stat
+     ...: e','color'])
+
+In [135]: L
+Out[135]:
+MultiIndex(levels=[['Colorado', 'Ohio'], ['Green', 'Red']],
+           labels=[[1, 1, 0], [0, 1, 0]],
+           names=['state', 'color'])
+
+In [136]: L['Colorado']
+---------------------------------------------------------------------------
+IndexError                                Traceback (most recent call last)
+<ipython-input-136-53511b5aed89> in <module>
+----> 1 L['Colorado']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/multi.py in __getitem__(self, key)
+   1563             retval = []
+   1564             for lev, lab in zip(self.levels, self.labels):
+-> 1565                 if lab[key] == -1:
+   1566                     retval.append(np.nan)
+   1567                 else:
+
+IndexError: only integers, slices (`:`), ellipsis (`...`), numpy.newaxis (`None`) and integer or boolean arrays are valid indices
+
+In [137]: L['state']
+---------------------------------------------------------------------------
+IndexError                                Traceback (most recent call last)
+<ipython-input-137-f9edf173c9b1> in <module>
+----> 1 L['state']
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/indexes/multi.py in __getitem__(self, key)
+   1563             retval = []
+   1564             for lev, lab in zip(self.levels, self.labels):
+-> 1565                 if lab[key] == -1:
+   1566                     retval.append(np.nan)
+   1567                 else:
+
+IndexError: only integers, slices (`:`), ellipsis (`...`), numpy.newaxis (`None`) and integer or boolean arrays are valid indices
+
+In [138]: L.names
+Out[138]: FrozenList(['state', 'color'])
+
+In [139]: L.columns.names
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-139-cbd2a2298dc2> in <module>
+----> 1 L.columns.names
+
+AttributeError: 'MultiIndex' object has no attribute 'columns'
+
+In [140]: # Reordering and Sorting Levels
+
+In [141]: frame
+Out[141]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+     2        3   4        5
+b    1        6   7        8
+     2        9  10       11
+
+In [142]: frame.swaplevel('key1','key2')
+Out[142]:
+state      Ohio     Colorado
+color     Green Red    Green
+key2 key1
+1    a        0   1        2
+2    a        3   4        5
+1    b        6   7        8
+2    b        9  10       11
+
+In [143]: frame
+Out[143]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+     2        3   4        5
+b    1        6   7        8
+     2        9  10       11
+
+In [144]: frame
+Out[144]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+     2        3   4        5
+b    1        6   7        8
+     2        9  10       11
+
+In [145]: frame.sortlevle(0)
+---------------------------------------------------------------------------
+AttributeError                            Traceback (most recent call last)
+<ipython-input-145-2da9ebbd5eb8> in <module>
+----> 1 frame.sortlevle(0)
+
+~/.conda/envs/torch_04/lib/python3.5/site-packages/pandas/core/generic.py in __getattr__(self, name)
+   4374             if self._info_axis._can_hold_identifiers_and_holds_name(name):
+   4375                 return self[name]
+-> 4376             return object.__getattribute__(self, name)
+   4377
+   4378     def __setattr__(self, name, value):
+
+AttributeError: 'DataFrame' object has no attribute 'sortlevle'
+
+In [146]: frame.sortlevel(0)
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: FutureWarning: sortlevel is deprecated, use sort_index(level= ...)
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[146]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+     2        3   4        5
+b    1        6   7        8
+     2        9  10       11
+
+In [147]: frame
+Out[147]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+     2        3   4        5
+b    1        6   7        8
+     2        9  10       11
+
+In [148]: frame.sortlevel(0)
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: FutureWarning: sortlevel is deprecated, use sort_index(level= ...)
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[148]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+     2        3   4        5
+b    1        6   7        8
+     2        9  10       11
+
+In [149]: frame.sortlevel(1)
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: FutureWarning: sortlevel is deprecated, use sort_index(level= ...)
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[149]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+b    1        6   7        8
+a    2        3   4        5
+b    2        9  10       11
+
+In [150]: frame.swaplevel(0,1)
+Out[150]:
+state      Ohio     Colorado
+color     Green Red    Green
+key2 key1
+1    a        0   1        2
+2    a        3   4        5
+1    b        6   7        8
+2    b        9  10       11
+
+In [151]: frame.swaplevel(0,1).sortlevel(0)
+/home/zzp/.conda/envs/torch_04/bin/ipython:1: FutureWarning: sortlevel is deprecated, use sort_index(level= ...)
+  #!/home/zzp/.conda/envs/torch_04/bin/python
+Out[151]:
+state      Ohio     Colorado
+color     Green Red    Green
+key2 key1
+1    a        0   1        2
+     b        6   7        8
+2    a        3   4        5
+     b        9  10       11
+
+In [152]: frame.swaplevel(0,1).sort_index(level=0)
+Out[152]:
+state      Ohio     Colorado
+color     Green Red    Green
+key2 key1
+1    a        0   1        2
+     b        6   7        8
+2    a        3   4        5
+     b        9  10       11
+
+In [153]: frame.swaplevel(0,1).sort_index(level=1)
+Out[153]:
+state      Ohio     Colorado
+color     Green Red    Green
+key2 key1
+1    a        0   1        2
+2    a        3   4        5
+1    b        6   7        8
+2    b        9  10       11
+
+In [154]: # Summary Statistics by Level
+
+In [155]: frame
+Out[155]:
+state      Ohio     Colorado
+color     Green Red    Green
+key1 key2
+a    1        0   1        2
+     2        3   4        5
+b    1        6   7        8
+     2        9  10       11
+
+In [156]: frame.sum()
+Out[156]:
+state     color
+Ohio      Green    18
+          Red      22
+Colorado  Green    26
+dtype: int64
+
+In [157]: frame.sum(axis=1)
+Out[157]:
+key1  key2
+a     1        3
+      2       12
+b     1       21
+      2       30
+dtype: int64
+
+In [158]: frame.sum(level='color',axis=1)
+Out[158]:
+color      Green  Red
+key1 key2
+a    1         2    1
+     2         8    4
+b    1        14    7
+     2        20   10
+
+In [159]: # Using a DataFrame’s Columns
+
+In [160]: frame = DataFrame({'a':range(7),'b':range(7,0,-1),'c':['one','one','one','two','two','two','
+     ...: two'],'d':[0,1,2,0,1,2,3]})
+
+In [161]: frame
+Out[161]:
+   a  b    c  d
+0  0  7  one  0
+1  1  6  one  1
+2  2  5  one  2
+3  3  4  two  0
+4  4  3  two  1
+5  5  2  two  2
+6  6  1  two  3
+
+In [162]: frame2 = frame.set_index(['c','d'])
+
+In [163]: frame2
+Out[163]:
+       a  b
+c   d
+one 0  0  7
+    1  1  6
+    2  2  5
+two 0  3  4
+    1  4  3
+    2  5  2
+    3  6  1
+
+In [164]: frame.set_index(['c','d'],drop=False)
+Out[164]:
+       a  b    c  d
+c   d
+one 0  0  7  one  0
+    1  1  6  one  1
+    2  2  5  one  2
+two 0  3  4  two  0
+    1  4  3  two  1
+    2  5  2  two  2
+    3  6  1  two  3
+
+In [165]: frame2.reset_index()
+Out[165]:
+     c  d  a  b
+0  one  0  0  7
+1  one  1  1  6
+2  one  2  2  5
+3  two  0  3  4
+4  two  1  4  3
+5  two  2  5  2
+6  two  3  6  1
+
+In [166]: # other pandas topics
+
+In [167]: # integer indexing
